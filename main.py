@@ -351,8 +351,14 @@ async def on_ready():
         f"Logged in as {client.user} ({client.user.id if client.user else 'unknown'})"
     )
 
-    await client.tree.sync()
-    l.info("Slash commands synced.")
+    cmds = client.tree.get_commands()
+    if cmds:
+        cmd_names = sorted(c.name for c in cmds)
+        l.info(f"Syncing {len(cmds)} slash command(s): {', '.join(cmd_names)}")
+        await client.tree.sync()
+        l.info("Slash commands synced.")
+    else:
+        l.info("No slash commands registered, skipping tree sync.")
 
     await update_presence()
 
