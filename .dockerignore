@@ -1,0 +1,9 @@
+.git
+docs
+.github
+data
+.venv
+__pycache__
+*.pyc
+*.yaml
+!lang/**/*.yaml

@@ -173,6 +173,47 @@ sudo systemctl start wyf9s-bot-2
 sudo systemctl enable wyf9s-bot-2
 ```
 
+## Docker Deployment (Optional)
+
+You can also deploy using a pre-built Docker image, without installing Python / uv on the host.
+
+### Using Docker Compose (Recommended)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/wyf9/wyf9s-discord-bot.git --depth 1
+cd wyf9s-discord-bot
+
+# 2. Copy the example config and Compose file
+cp config.example.yaml config.yaml
+cp docker-compose.example.yaml docker-compose.yaml
+
+# 3. Edit the config (at least fill in the token)
+nano config.yaml
+
+# 4. Start / view logs
+docker compose up -d
+docker compose logs -f
+```
+
+To update the image:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+### Using Docker CLI
+
+```bash
+docker run -d --name wyf9s-discord-bot --restart unless-stopped \
+  -v "$(pwd)/config.yaml:/app/data/config.yaml:ro" \
+  -v "$(pwd)/tk.yaml:/app/data/tk.yaml:ro" \
+  -v "$(pwd)/data:/app/data" \
+  ghcr.io/wyf9/wyf9s-discord-bot:latest
+```
+
+The config file / token file and runtime data (`perm.yaml`, `lang_settings.yaml`, `schedules.yaml`, logs) are all persisted in host directories, following the same resolution rules as the [Data Directory](#data-directory). You can also inject the token directly via the `W9DCBOT_TOKEN` environment variable (highest priority).
+
 # =============================================================================
 # Bot Presence (global)
 # =============================================================================

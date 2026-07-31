@@ -161,6 +161,47 @@ sudo systemctl start wyf9s-bot-2
 sudo systemctl enable wyf9s-bot-2
 ```
 
+## Docker 部署（可选）
+
+也可通过预构建的 Docker 镜像部署，无需在宿主机安装 Python / uv。
+
+### 使用 Docker Compose（推荐）
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/wyf9/wyf9s-discord-bot.git --depth 1
+cd wyf9s-discord-bot
+
+# 2. 复制示例配置与 Compose 文件
+cp config.example.yaml config.yaml
+cp docker-compose.example.yaml docker-compose.yaml
+
+# 3. 编辑配置 (至少填入 token)
+nano config.yaml
+
+# 4. 启动 / 查看日志
+docker compose up -d
+docker compose logs -f
+```
+
+更新镜像：
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+### 使用 Docker CLI
+
+```bash
+docker run -d --name wyf9s-discord-bot --restart unless-stopped \
+  -v "$(pwd)/config.yaml:/app/data/config.yaml:ro" \
+  -v "$(pwd)/tk.yaml:/app/data/tk.yaml:ro" \
+  -v "$(pwd)/data:/app/data" \
+  ghcr.io/wyf9/wyf9s-discord-bot:latest
+```
+
+配置文件 / token 文件与运行时数据（`perm.yaml`、`lang_settings.yaml`、`schedules.yaml`、日志）均持久化在宿主机目录，路径解析规则同[数据目录](#数据目录)。也可用 `W9DCBOT_TOKEN` 环境变量直接注入 token（优先级最高）。
+
 # =============================================================================
 # Bot Presence (全局)
 # =============================================================================

@@ -1,0 +1,17 @@
+# 复制此文件为 docker-compose.yaml 并根据需要修改
+services:
+  bot:
+    image: ghcr.io/wyf9/wyf9s-discord-bot:latest
+    container_name: wyf9s-discord-bot
+    restart: unless-stopped
+    volumes:
+      # 配置文件与 token 文件（可放在 /app 或 /app/data，读取时先查数据目录再回退主程序目录）
+      - ./config.yaml:/app/data/config.yaml:ro
+      - ./tk.yaml:/app/data/tk.yaml:ro
+      # 运行时数据目录（perm.yaml / lang_settings.yaml / schedules.yaml / 日志），需持久化
+      - ./data:/app/data
+    # 或用环境变量注入 token（优先级高于 token 文件与配置文件）
+    # environment:
+    #   - W9DCBOT_TOKEN=your-bot-token
+    # 指定日志等级等配置时也可通过 --config / --data-dir 参数覆盖
+    # command: ["uv", "run", "python", "main.py"]
