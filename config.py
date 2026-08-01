@@ -401,6 +401,12 @@ class _PermConfigModel(BaseModel):
     enabled: bool = False
     """是否启用动态权限模块"""
 
+    slash: bool = True
+    """是否注册斜杠指令"""
+
+    prefix: bool = True
+    """是否注册前缀指令"""
+
 
 class _AnnounceConfigModel(BaseModel):
     """
@@ -446,6 +452,12 @@ class ConfigModel(BaseModel):
 
     command_prefix: str = "\\"
     """命令前缀 (unused?)"""
+
+    slash: bool = True
+    """全局斜杠指令开关 (关闭后所有模块的斜杠指令均不注册)"""
+
+    prefix: bool = True
+    """全局前缀指令开关 (关闭后所有模块的前缀指令均不注册)"""
 
     secret_message_delay: int = 600
     """私密消息删除延迟 (秒)"""

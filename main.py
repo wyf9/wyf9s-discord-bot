@@ -256,6 +256,19 @@ COG_LIST = [
     "cogs.lang",
 ]
 
+# Map cog class name → config key for per-module slash/prefix toggles.
+# Cogs not listed here are only controlled by the global switches.
+COG_TO_CONFIG = {
+    "EmojiCog": "emoji",
+    "ToolsCog": "tools",
+    "LockCog": "lock",
+    "VoiceCog": "voicechannel",
+    "PermCog": "perm",
+    "AdminCog": "admin",
+    "LangCog": "lang",
+    "AnnounceCog": "announce",
+}
+
 
 async def load_cogs():
     for ext in COG_LIST:
@@ -266,6 +279,44 @@ async def load_cogs():
             l.error(f"Failed to load extension {ext}: {e}")
         except Exception as e:
             l.error(f"Unexpected error loading {ext}: {e}")
+
+
+def _apply_command_toggles():
+    """Apply per-module and global slash/prefix toggles after cogs are loaded."""
+    global_slash = getattr(c, "slash", True)
+    global_prefix = getattr(c, "prefix", True)
+
+    for cog_name, cog in client.cogs.items():
+        config_key = COG_TO_CONFIG.get(cog_name)
+        module_cfg = getattr(c, config_key, None) if config_key else None
+
+        slash_enabled = global_slash
+        prefix_enabled = global_prefix
+
+        if module_cfg is not None and hasattr(module_cfg, "slash"):
+            slash_enabled = global_slash and module_cfg.slash
+        if module_cfg is not None and hasattr(module_cfg, "prefix"):
+            prefix_enabled = global_prefix and module_cfg.prefix
+
+        if not slash_enabled:
+            for cmd in list(getattr(cog, "__cog_app_commands__", [])):
+                try:
+                    client.tree.remove_command(cmd.name)
+                except Exception as e:
+                    l.debug(
+                        f"Failed to remove slash command {cmd.name} from {cog_name}: {e}"
+                    )
+            l.info(f"Removed slash commands for {cog_name} (disabled)")
+
+        if not prefix_enabled:
+            for cmd in list(getattr(cog, "__cog_commands__", [])):
+                try:
+                    client.remove_command(cmd.name)
+                except Exception as e:
+                    l.debug(
+                        f"Failed to remove prefix command {cmd.name} from {cog_name}: {e}"
+                    )
+            l.info(f"Removed prefix commands for {cog_name} (disabled)")
 
 
 # endregion modules
@@ -416,6 +467,7 @@ async def main():
 
         await client.tree.set_translator(I18nTranslator())
         await load_cogs()
+        _apply_command_toggles()
         await client.start(c.token)
 
 
