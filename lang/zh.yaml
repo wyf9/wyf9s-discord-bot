@@ -282,6 +282,26 @@ perm:
   sent_via_dm: ":white_check_mark: **已通过私信发送，请查看私聊**"
   cannot_dm: ":x: **无法私信你 (私信已关闭)**"
 
+chatenhance:
+  group_desc: "聊天增强指令"
+  cmd_enable_desc: "[ADMIN] 为服务器启用一个聊天增强功能"
+  cmd_disable_desc: "[ADMIN] 为服务器禁用一个聊天增强功能"
+  cmd_list_desc: "[ADMIN] 查看本服务器已启用的聊天增强功能"
+  param_function: "功能名称"
+  usage_prefix: "使用子命令: `enhance enable <function>`, `enhance disable <function>`, `enhance list`"
+  server_only: ":x: **仅限服务器内使用的指令**"
+  function_invalid: ":x: **未知功能: `{function}`**"
+  enabled: ":white_check_mark: **已启用聊天增强功能 `{function}`**"
+  already_enabled: ":information_source: **`{function}` 已处于启用状态**"
+  disabled: ":white_check_mark: **已禁用聊天增强功能 `{function}`**"
+  not_enabled: ":information_source: **`{function}` 已处于禁用状态**"
+  list_title: "聊天增强功能状态:"
+  list_item: "- {status} `{function}`"
+  autofixupx_no_api_error: "**:x: 需要配置 x-to-img API URL (`chatenhance.autofixupx.x_to_img_url`) 才能使用 x-to-img 模式**"
+  autofixupx_no_api_warning: ":warning: 未配置 x-to-img API URL, 仅发送 fixupx 链接"
+  autofixupx_all_failed: ":x: **转换推文图片失败**"
+  autofixupx_partial_failed: ":x: **部分推文图片转换失败**"
+
 clearmsg:
   time_invalid: "{label}: `{value}` 格式无效 (支持: 消息ID, 相对时间如 30m/2h/1d, ISO 时间)"
   count_negative: ":x: **message_count 不能小于 0** :x:"

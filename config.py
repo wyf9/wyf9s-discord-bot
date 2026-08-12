@@ -439,6 +439,47 @@ class _PresenceConfigModel(BaseModel):
     # optionally could add more fields later
 
 
+class _AutoFixupxConfigModel(BaseModel):
+    """
+    Chat enhance - autofixupx function config
+    自动将 x.com / twitter.com 推文链接转换为可预览形式
+    """
+
+    mode: t.Literal["fixupx", "x-to-img", "both"] = "fixupx"
+    """转换方式: fixupx (发 fixupx.com 链接) | x-to-img (发图片) | both (两者都发)"""
+
+    x_to_img_url: str | None = None
+    """x-to-img API 地址 (如 https://x-to-img.example.com), 末尾不带 `/`"""
+
+    theme: t.Literal["light", "dim", "dark"] = "light"
+    """x-to-img 图片主题 (light / dim / dark)"""
+
+    api_token: str | None = None
+    """x-to-img 可选 Bearer token (服务端启用了 API_TOKEN 时需要)"""
+
+    limit: int = 2
+    """一条消息中最多转换几个链接"""
+
+
+class _ChatEnhanceConfigModel(BaseModel):
+    """
+    聊天增强模块配置
+    指令: /enhance enable, /enhance disable, /enhance list (服务器范围, 默认禁用, [ADMIN])
+    """
+
+    enabled: bool = False
+    """是否启用聊天增强模块"""
+
+    slash: bool = True
+    """是否注册斜杠指令"""
+
+    prefix: bool = True
+    """是否注册前缀指令"""
+
+    autofixupx: _AutoFixupxConfigModel = _AutoFixupxConfigModel()
+    """autofixupx 功能: 自动转换 X / Twitter 推文链接"""
+
+
 class ConfigModel(BaseModel):
     """
     基础配置
@@ -476,6 +517,7 @@ class ConfigModel(BaseModel):
     mods: _ScopedPermissionListConfigModel = _ScopedPermissionListConfigModel()
     perm: _PermConfigModel = _PermConfigModel()
     announce: _AnnounceConfigModel = _AnnounceConfigModel()
+    chatenhance: _ChatEnhanceConfigModel = _ChatEnhanceConfigModel()
 
 
 def _normalize_config_keys(d: dict) -> dict:

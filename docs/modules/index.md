@@ -17,6 +17,7 @@
 | 管理指令 | — | 指令 | `/sync` `/reload` | [查看](/modules/admin) |
 | 动态权限 | `perm` | 指令 | `/perm add` `/perm rm` `/perm show` | [查看](/modules/perm) |
 | 公告推送 | `announce` | 指令 | `/subscribe` | [查看](/modules/announce) |
+| 聊天增强 | `chatenhance` | 指令 / 事件 | `/enhance enable` `/enhance disable` `/enhance list` | [查看](/modules/chatenhance) |
 | 多语言 | —（始终启用） | 指令 | `/lang` | [查看](/modules/lang) |
 | 自动管理 | `rmmsg` / `rmtodo` | 事件 | 无 | [查看](/modules/manage) |
 | 反垃圾 | `antispam` | 事件 | 无 | [查看](/modules/antispam) |
@@ -47,6 +48,9 @@
 | `/perm rm` | perm | Admin | — | 删除权限规则 |
 | `/perm show` | perm | Admin | — | 查看权限规则 |
 | `/subscribe` | announce | Mod | — | 关注公告频道 |
+| `/enhance enable` | chatenhance | Admin | — | 启用聊天增强功能 |
+| `/enhance disable` | chatenhance | Admin | — | 禁用聊天增强功能 |
+| `/enhance list` | chatenhance | Admin | — | 查看聊天增强功能状态 |
 | `/lang` | lang | 所有人（server 范围需管理权限） | ✅ | 切换 / 查看语言偏好 |
 
 > 权限体系详见[权限系统](/guide/permissions)，限速详见[限速与 Rate Limit](/guide/rate-limit)。

@@ -16,6 +16,7 @@ A multi-purpose Discord bot built on discord.py with YAML + Pydantic configurati
 | Admin (`admin`) | Command sync and module / config hot reloads |
 | Dynamic Permissions (`perm`) | Dynamic permission management via `perm.yaml`, with `config.yaml` always taking priority |
 | Announcement Push (`announce`) | Follow announcement channels and let Discord forward messages automatically |
+| Chat Enhance (`chatenhance`) | Server-level feature toggles; auto-converts X/Twitter links to a previewable form (fixupx / x-to-img) |
 | Multilingual (`lang`) | Switch language preferences per user / server |
 
 ## Documentation

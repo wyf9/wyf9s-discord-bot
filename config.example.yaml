@@ -130,6 +130,22 @@ antispam:
   #   ignored_roles: ["管理员", "成员"]  # 忽略处理的角色列表, 拥有任一角色的成员不会被处理 (支持身份组 ID 或名称)
 
 # =============================================================================
+# 聊天增强模块
+# 指令: /enhance enable, /enhance disable, /enhance list (服务器范围, 默认禁用, [ADMIN])
+# 各功能默认按服务器禁用, 需服务器管理员通过 /enhance enable 显式启用
+# =============================================================================
+chatenhance:
+  enabled: false
+  slash: true
+  prefix: true
+  autofixupx:                 # 自动将 x.com / twitter.com 推文链接转为可预览形式
+    mode: "fixupx"            # 转换方式: fixupx (发 fixupx.com 链接) | x-to-img (发图片) | both (两者都发)
+    x_to_img_url: null        # x-to-img API 地址 (末尾不带 /); x-to-img / both 模式使用
+    theme: "light"            # x-to-img 图片主题: light | dim | dark
+    api_token: null           # x-to-img 可选 Bearer token (服务端启用了 API_TOKEN 时需要)
+    limit: 2                  # 一条消息中最多转换几个链接
+
+# =============================================================================
 # 管理员和权限配置
 # =============================================================================
 admins:

@@ -17,6 +17,7 @@ The bot is composed of multiple modules, all **enabled on demand** via the `enab
 | Admin Commands | — | Command | `/sync` `/reload` | [View](/en/modules/admin) |
 | Dynamic Permissions | `perm` | Command | `/perm add` `/perm rm` `/perm show` | [View](/en/modules/perm) |
 | Announcement Push | `announce` | Command | `/subscribe` | [View](/en/modules/announce) |
+| Chat Enhance | `chatenhance` | Command / Event | `/enhance enable` `/enhance disable` `/enhance list` | [View](/en/modules/chatenhance) |
 | Multilingual | — (always enabled) | Command | `/lang` | [View](/en/modules/lang) |
 | Auto Management | `rmmsg` / `rmtodo` | Event | None | [View](/en/modules/manage) |
 | Anti-spam | `antispam` | Event | None | [View](/en/modules/antispam) |
@@ -47,6 +48,9 @@ The bot is composed of multiple modules, all **enabled on demand** via the `enab
 | `/perm rm` | perm | Admin | — | Remove a permission rule |
 | `/perm show` | perm | Admin | — | View permission rules |
 | `/subscribe` | announce | Mod | — | Follow an announcement channel |
+| `/enhance enable` | chatenhance | Admin | — | Enable a chat enhance function |
+| `/enhance disable` | chatenhance | Admin | — | Disable a chat enhance function |
+| `/enhance list` | chatenhance | Admin | — | View chat enhance function status |
 | `/lang` | lang | Everyone (server scope requires admin permission) | ✅ | Switch / view language preference |
 
 > For the permission system, see [Permission System](/en/guide/permissions); for rate limiting, see [Rate Limit](/en/guide/rate-limit).

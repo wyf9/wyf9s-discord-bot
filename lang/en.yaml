@@ -282,6 +282,26 @@ perm:
   sent_via_dm: ":white_check_mark: **Sent via DM, please check your inbox**"
   cannot_dm: ":x: **Cannot DM you (DMs closed)**"
 
+chatenhance:
+  group_desc: "Chat enhance commands"
+  cmd_enable_desc: "[ADMIN] Enable a chat enhance function for this server"
+  cmd_disable_desc: "[ADMIN] Disable a chat enhance function for this server"
+  cmd_list_desc: "[ADMIN] List chat enhance functions enabled in this server"
+  param_function: "Function name"
+  usage_prefix: "Use subcommands: `enhance enable <function>`, `enhance disable <function>`, `enhance list`"
+  server_only: ":x: **Server-only command**"
+  function_invalid: ":x: **Unknown function: `{function}`**"
+  enabled: ":white_check_mark: **Chat enhance function `{function}` enabled**"
+  already_enabled: ":information_source: **`{function}` is already enabled**"
+  disabled: ":white_check_mark: **Chat enhance function `{function}` disabled**"
+  not_enabled: ":information_source: **`{function}` is already disabled**"
+  list_title: "Chat enhance function status:"
+  list_item: "- {status} `{function}`"
+  autofixupx_no_api_error: "**:x: An x-to-img API URL (`chatenhance.autofixupx.x_to_img_url`) is required for x-to-img mode**"
+  autofixupx_no_api_warning: ":warning: No x-to-img API URL configured, only sending fixupx links"
+  autofixupx_all_failed: ":x: **Failed to convert tweet images**"
+  autofixupx_partial_failed: ":x: **Some tweet images failed to convert**"
+
 clearmsg:
   time_invalid: "{label}: `{value}` invalid format (supported: message ID, relative time e.g. 30m/2h/1d, ISO time)"
   count_negative: ":x: **message_count cannot be less than 0** :x:"

@@ -54,6 +54,7 @@ Token 的优先级为：**`--token` / `W9DCBOT_TOKEN` > token 文件（`tk.yaml`
 - [语音频道 `voicechannel`](/modules/voice#配置)
 - [自动管理 `rmmsg` / `rmtodo`](/modules/manage#配置)
 - [反垃圾 `antispam`](/modules/antispam#配置)
+- [聊天增强 `chatenhance`](/modules/chatenhance#配置)
 - [审计日志 `audit`](/modules/audit#配置)
 
 ## 权限名单
@@ -152,6 +153,18 @@ voicechannel:
 antispam:
   enabled: false
   spam_catcher: {}
+
+# 聊天增强模块 (服务器范围, 功能默认禁用)
+chatenhance:
+  enabled: false
+  slash: true
+  prefix: true
+  autofixupx:
+    mode: "fixupx"
+    x_to_img_url: null
+    theme: "light"
+    api_token: null
+    limit: 2
 
 # 管理员和权限配置
 admins:

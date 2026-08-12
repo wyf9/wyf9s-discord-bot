@@ -53,6 +53,7 @@ from discord.ext import commands
 
 import utils as u
 from config import Config
+from enhance_store import EnhanceStore
 from i18n import I18nTranslator
 from lang_store import LangStore
 from modules.audit import AuditLogger
@@ -154,6 +155,10 @@ async def _reload_sighup():
         if perm_store:
             perm_store._load()
 
+        enhance_store = getattr(client, "enhance_store", None)
+        if enhance_store:
+            enhance_store._load()
+
         l.info(
             f"Reloaded config + {succeeded} cogs from SIGHUP ({len(failures)} failed)"
         )
@@ -238,6 +243,7 @@ else:
 client.rate_limiter = u.RateLimiter()  # ty:ignore[unresolved-attribute]
 client.perm_store = PermStore()  # ty:ignore[unresolved-attribute]
 u.set_perm_store(client.perm_store)  # ty:ignore[unresolved-attribute]
+client.enhance_store = EnhanceStore()  # ty:ignore[unresolved-attribute]
 
 # endregion setup
 
@@ -254,6 +260,7 @@ COG_LIST = [
     "cogs.perm",
     "cogs.announce",
     "cogs.lang",
+    "cogs.chatenhance",
 ]
 
 # Map cog class name → config key for per-module slash/prefix toggles.
@@ -267,6 +274,7 @@ COG_TO_CONFIG = {
     "AdminCog": "admin",
     "LangCog": "lang",
     "AnnounceCog": "announce",
+    "ChatEnhanceCog": "chatenhance",
 }
 
 

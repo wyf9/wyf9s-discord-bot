@@ -54,6 +54,7 @@ Module-specific configuration:
 - [Voice Channel `voicechannel`](/en/modules/voice)
 - [Auto Management `rmmsg` / `rmtodo`](/en/modules/manage)
 - [Anti-Spam `antispam`](/en/modules/antispam)
+- [Chat Enhance `chatenhance`](/en/modules/chatenhance)
 - [Audit Log `audit`](/en/modules/audit)
 
 ## Permission lists
@@ -152,6 +153,18 @@ voicechannel:
 antispam:
   enabled: false
   spam_catcher: {}
+
+# Chat enhance module (server scope, features disabled by default)
+chatenhance:
+  enabled: false
+  slash: true
+  prefix: true
+  autofixupx:
+    mode: "fixupx"
+    x_to_img_url: null
+    theme: "light"
+    api_token: null
+    limit: 2
 
 # Admin and permission config
 admins:

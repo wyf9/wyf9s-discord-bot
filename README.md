@@ -16,6 +16,7 @@
 | 管理 (`admin`) | 指令同步、模块 / 配置热重载 |
 | 动态权限 (`perm`) | 基于 `perm.yaml` 的动态权限管理，`config.yaml` 始终优先 |
 | 公告推送 (`announce`) | 关注公告频道并由 Discord 自动转发消息 |
+| 聊天增强 (`chatenhance`) | 服务器级功能开关指令；自动将 X/Twitter 链接转为可预览形式 (fixupx / x-to-img) |
 | 多语言 (`lang`) | 按用户 / 服务器切换语言偏好 |
 
 ## 文档
