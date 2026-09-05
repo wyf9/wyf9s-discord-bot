@@ -202,17 +202,6 @@ docker run -d --name wyf9s-discord-bot --restart unless-stopped \
 
 配置文件 / token 文件与运行时数据（`perm.yaml`、`lang_settings.yaml`、`schedules.yaml`、日志）均持久化在宿主机目录，路径解析规则同[数据目录](#数据目录)。也可用 `W9DCBOT_TOKEN` 环境变量直接注入 token（优先级最高）。
 
-# =============================================================================
-# Bot Presence (全局)
-# =============================================================================
-# presence 配置用于设置自定义全局 Bot 状态。
-# activity 中可使用 {servers} 与 {members} 占位符，在运行时会替换为当前服务器数量和成员总数。
-# status 为 Discord 的在线状态，可选: online, idle, dnd, invisible。
-presence:
-  enabled: true                # 是否启用自定义 Presence
-  activity: "Serving {servers} Servers with {members} Members"
-  status: online               # online | idle | dnd | invisible
-
 ### 数据目录
 
 运行时可变的数据文件（`perm.yaml`、`lang_settings.yaml`、`schedules.yaml`）以及**日志文件**（`log.file`）默认存放在 `--data-dir` 指定的目录（默认 `./data/`，按当前工作目录解析）。

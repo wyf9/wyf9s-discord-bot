@@ -214,18 +214,6 @@ docker run -d --name wyf9s-discord-bot --restart unless-stopped \
 
 The config file / token file and runtime data (`perm.yaml`, `lang_settings.yaml`, `schedules.yaml`, logs) are all persisted in host directories, following the same resolution rules as the [Data Directory](#data-directory). You can also inject the token directly via the `W9DCBOT_TOKEN` environment variable (highest priority).
 
-# =============================================================================
-# Bot Presence (global)
-# =============================================================================
-# presence configuration allows setting a custom global Bot status.
-# In `activity` you may use {servers} and {members} placeholders which are replaced
-# at runtime with the current server and member counts.
-# `status` is one of: online, idle, dnd, invisible.
-presence:
-  enabled: true                # Enable custom presence
-  activity: "Serving {servers} Servers with {members} Members"
-  status: online               # online | idle | dnd | invisible
-
 ## Bot Permissions and Intents
 
 ### Gateway Intents
