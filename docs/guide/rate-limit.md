@@ -38,16 +38,18 @@ def hit(self, key, limit, window) -> tuple[bool, float]:
 
 ### 配置
 
+限速是**全局配置**，按模块 / 指令分别设置额度：
+
 ```yaml
-tools:
-  enabled: true
-  ratelimit:
-    enabled: true          # 是否启用限速
-    window: 60             # 时间窗口 (秒)
-    mod_multiplier: 3      # mod 额度倍数 (相对普通用户); admin 不受限速
-    random: 10             # random: 普通用户每窗口最大次数
-    uuid: 10               # uuid:   普通用户每窗口最大次数
-    "2file": 10            # to-file:  普通用户每窗口最大次数 (YAML 键: "2file")
+ratelimit:
+  enabled: true          # 是否启用限速
+  window: 60             # 时间窗口 (秒)
+  mod_multiplier: 3      # mod 额度倍数 (相对普通用户); admin 不受限速
+  modules:               # 按模块的默认额度
+    emoji: 10
+  commands:              # 按指令 / 子指令的额度
+    vc: 20
+    "emoji update": 5
 ```
 
 | 字段 | 类型 | 默认值 | 说明 |
@@ -55,13 +57,12 @@ tools:
 | `enabled` | `bool` | `true` | 是否启用限速 |
 | `window` | `int` | `60` | 时间窗口（秒） |
 | `mod_multiplier` | `int` | `3` | mod 相对普通用户的额度倍数 |
-| `random` | `int` | `10` | `random` 每窗口最大次数（普通用户） |
-| `uuid` | `int` | `10` | `uuid` 每窗口最大次数（普通用户） |
-| `"2file"` | `int` | `10` | `to-file` 每窗口最大次数（YAML 键名，内部字段 `to_file`） |
+| `modules` | `map` | 内置指令额度 | 按模块名设置默认额度 |
+| `commands` | `map` | 内置指令额度 | 按指令名或子指令全名设置额度 |
 
-::: tip
-`"2file"` 是 `to-file` 指令在 YAML 中的键名（数字开头，需引号），内部 Pydantic 字段名为 `to_file`，通过 `Field(alias="2file")` 映射。
-:::
+额度优先级：**子指令 > 指令 > 模块**（如 `"emoji update"` > `emoji` > `modules.emoji`）。
+
+旧版写在 `tools.ratelimit` / `emoji.ratelimit` 下的配置仍然兼容，会由配置层自动迁移到全局 `ratelimit`。
 
 ## Discord API Rate Limit
 

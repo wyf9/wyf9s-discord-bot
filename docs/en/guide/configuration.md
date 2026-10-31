@@ -101,6 +101,20 @@ log:
   retention: "3 days"
   discord_level: "INFO"       # discord.py library's own log level (independent of level)
 
+# Command rate limiting (global)
+ratelimit:
+  enabled: true
+  window: 60
+  mod_multiplier: 3
+  modules:
+    emoji: 10
+  commands:
+    random: 10
+    uuid: 10
+    to-file: 10
+    e: 10
+    "emoji info": 10
+
 # Audit log (no commands, service module)
 # Only logs [ADMIN]/[MOD] commands, server-scope changes, anti-spam auto actions and errors
 audit:
@@ -121,13 +135,6 @@ tools:
   enabled: false
   slash: true
   prefix: true
-  ratelimit:
-    enabled: true
-    window: 60
-    mod_multiplier: 3
-    random: 10
-    uuid: 10
-    "2file": 10               # YAML key name for to-file (legacy-compatible)
 
 # Channel lock module
 lock:

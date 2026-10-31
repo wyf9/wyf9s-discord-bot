@@ -167,13 +167,6 @@ tools:
   enabled: false
   slash: true
   prefix: true
-  ratelimit:              # 仅作用于 random / uuid / to-file
-    enabled: true
-    window: 60            # 时间窗口 (秒)
-    mod_multiplier: 3     # mod 额度倍数; admin 不受限速
-    random: 10
-    uuid: 10
-    "2file": 10           # to-file 的 YAML 键名 (数字开头需引号)
 ```
 
 | 字段 | 类型 | 默认值 | 说明 |
@@ -181,4 +174,3 @@ tools:
 | `enabled` | `bool` | `false` | 是否启用工具模块 |
 | `slash` | `bool` | `true` | 是否注册斜杠指令 |
 | `prefix` | `bool` | `true` | 是否注册前缀指令 |
-| `ratelimit.*` | — | — | 限速配置，详见[限速页](/guide/rate-limit) |

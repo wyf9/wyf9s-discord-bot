@@ -3,7 +3,7 @@ import typing as t
 from pathlib import Path
 
 from loguru import logger as l
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from yaml import safe_load
 
 import utils as u
@@ -71,14 +71,41 @@ class _LoggingConfigModel(BaseModel):
         return upper
 
 
-class _ToolsRateLimitConfigModel(BaseModel):
+_LEGACY_RATELIMIT_KEYS: dict[str, str] = {
+    # 旧版字段名 -> 新配置中使用的指令名
+    "random": "random",
+    "uuid": "uuid",
+    "2file": "to-file",
+    "to_file": "to-file",
+    "e": "e",
+    "emoji_info": "emoji-info",
+}
+
+_COMMAND_ALIASES: dict[str, str] = {
+    # 下划线写法统一转为横线, 便于沿用旧字段名
+    "2file": "to-file",
+    "emoji_info": "emoji-info",
+    "emoji-info": "emoji-info",
+    "emoji info": "emoji-info",
+    "to file": "to-file",
+}
+
+
+def _normalize_command_key(name: str) -> str:
+    """归一化指令名: 下划线转横线, 兼容旧字段别名"""
+    key = name.strip().lower().replace("_", "-")
+    return _COMMAND_ALIASES.get(key, key)
+
+
+class _RateLimitConfigModel(BaseModel):
     """
-    限速配置
+    全局限速配置
     - admin (配置 admins) 不受限速
     - mod 的额度为普通用户的 mod_multiplier 倍
+    - 额度优先级: commands 中的子指令 > commands 中的指令 > modules 中的模块额度
     """
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(extra="allow")
 
     enabled: bool = True
     """是否启用限速"""
@@ -89,30 +116,44 @@ class _ToolsRateLimitConfigModel(BaseModel):
     mod_multiplier: int = 3
     """mod 的额度倍数 (相对普通用户)"""
 
-    random: int = 10
-    """random 指令: 窗口内普通用户最大次数"""
+    modules: dict[str, int] = {}
+    """按模块的默认额度, key 为模块名 (cog 名)"""
 
-    uuid: int = 10
-    """uuid 指令: 窗口内普通用户最大次数"""
+    commands: dict[str, int] = {
+        "random": 10,
+        "uuid": 10,
+        "to-file": 10,
+        "e": 10,
+        "emoji-info": 10,
+    }
+    """按指令的额度, key 为指令名 / 子指令全名 (如 "emoji update")"""
 
-    to_file: int = Field(default=10, alias="2file")
-    """to-file 指令: 窗口内普通用户最大次数 (YAML 键: "2file")"""
-
-    e: int = 10
-    """e 指令: 窗口内普通用户最大次数"""
-
-    emoji_info: int = 10
-    """emoji info 指令: 窗口内普通用户最大次数"""
-
-    def limit_for(self, command: str) -> int | None:
-        """获取指定指令的基础限速额度, 未配置则返回 None (不限速)"""
+    @field_validator("commands", "modules", mode="before")
+    def normalize_limits(cls, v):
+        if not isinstance(v, dict):
+            return v
         return {
-            "random": self.random,
-            "uuid": self.uuid,
-            "to-file": self.to_file,
-            "e": self.e,
-            "emoji-info": self.emoji_info,
-        }.get(command)
+            _normalize_command_key(str(k)): value
+            for k, value in v.items()
+            if value is not None
+        }
+
+    def resolve(self, module: str, command: str | None = None) -> int | None:
+        """
+        解析额度, 优先级: 子指令 > 指令 > 模块
+
+        :param module: 模块名 (cog 名)
+        :param command: 指令名或子指令全名 (如 "emoji update"/"vc join")
+        :return: 窗口内普通用户最大次数, None 表示不限速
+        """
+        if command:
+            key = _normalize_command_key(command)
+            if key in self.commands:
+                return self.commands[key]
+            parts = key.split(" ", 1)
+            if len(parts) > 1 and parts[0] in self.commands:
+                return self.commands[parts[0]]
+        return self.modules.get(_normalize_command_key(module))
 
 
 class _EmojiConfigModel(BaseModel):
@@ -135,9 +176,6 @@ class _EmojiConfigModel(BaseModel):
 
     max_results: int = 25
     """表情搜索的最大结果数 (设置过大可能导致调用失败)"""
-
-    ratelimit: _ToolsRateLimitConfigModel = _ToolsRateLimitConfigModel()
-    """限速配置 (/e / /emoji info)"""
 
 
 class _AutoRemoveTodoConfigModel(BaseModel):
@@ -332,9 +370,6 @@ class _ToolsConfigModel(BaseModel):
     prefix: bool = True
     """是否注册前缀指令"""
 
-    ratelimit: _ToolsRateLimitConfigModel = _ToolsRateLimitConfigModel()
-    """限速配置 (random / uuid / 2file)"""
-
     clear_single_delete_max: int = 20
     """clear-message 批量清理时, 若超过 14 天不可批量删除的消息数不超过此值,
     则回退为逐条删除以规避 bulk delete 的 14 天限制; 设为 0 表示禁用回退"""
@@ -511,6 +546,58 @@ class ConfigModel(BaseModel):
     基础配置
     """
 
+    @model_validator(mode="before")
+    def normalize_legacy(cls, data):
+        """
+        兼容旧版配置:
+        - 模块内的 ratelimit 段会被迁移到顶层 ratelimit (旧字段名转为指令名)
+        - 顶层 ratelimit 中的旧字段 (如 random / "2file") 转为 commands
+        """
+        if not isinstance(data, dict):
+            return data
+
+        current = data.get("ratelimit")
+        if isinstance(current, dict):
+            # 新版配置存在时以它为准, 不再合并旧版模块配置
+            return data
+
+        legacy: list[tuple[str, dict]] = []
+        for section in ("emoji", "tools"):
+            module_cfg = data.get(section)
+            if isinstance(module_cfg, dict) and "ratelimit" in module_cfg:
+                value = module_cfg.pop("ratelimit")
+                if isinstance(value, dict):
+                    legacy.append((section, value))
+        if not legacy:
+            return data
+        data["ratelimit"] = current = {}
+
+        commands = {
+            "random": 10,
+            "uuid": 10,
+            "to-file": 10,
+            "e": 10,
+            "emoji-info": 10,
+        }
+        module_commands = {
+            "emoji": {"e", "emoji-info"},
+            "tools": {"random", "uuid", "to-file"},
+        }
+        for section, old in legacy:
+            if old.get("enabled") is False:
+                for cmd in module_commands.get(section, set()):
+                    commands.pop(cmd, None)
+            for key, value in old.items():
+                if key in ("enabled", "window", "mod_multiplier"):
+                    current[key] = value
+                    continue
+                cmd = _LEGACY_RATELIMIT_KEYS.get(key)
+                if cmd is not None and old.get("enabled") is not False:
+                    commands[cmd] = value
+
+        current["commands"] = commands
+        return data
+
     token: str
     """Bot Token"""
 
@@ -528,6 +615,9 @@ class ConfigModel(BaseModel):
 
     secret_message_delay: int = 600
     """私密消息删除延迟 (秒)"""
+
+    ratelimit: _RateLimitConfigModel = _RateLimitConfigModel()
+    """全局限速配置 (替代各模块内的旧版 ratelimit)"""
 
     log: _LoggingConfigModel = _LoggingConfigModel()
     audit: _AuditLogConfigModel = _AuditLogConfigModel()

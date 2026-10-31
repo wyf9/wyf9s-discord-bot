@@ -38,30 +38,31 @@ def hit(self, key, limit, window) -> tuple[bool, float]:
 
 ### Configuration
 
+Rate limiting is **global**, with per-module / per-command quotas:
+
 ```yaml
-tools:
-  enabled: true
-  ratelimit:
-    enabled: true          # Whether to enable rate limiting
-    window: 60             # Time window (seconds)
-    mod_multiplier: 3      # Mod quota multiplier (relative to normal users); admin is not rate limited
-    random: 10             # random: max uses per window for normal users
-    uuid: 10               # uuid:   max uses per window for normal users
-    "2file": 10            # to-file:  max uses per window for normal users (YAML key: "2file")
+ratelimit:
+  enabled: true          # Whether to enable rate limiting
+  window: 60             # Time window (seconds)
+  mod_multiplier: 3      # Mod quota multiplier (relative to normal users); admin is not rate limited
+  modules:               # Default quota per module
+    emoji: 10
+  commands:              # Quota per command / subcommand
+    vc: 20
+    "emoji update": 5
 ```
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `enabled` | `bool` | `true` | Whether to enable rate limiting |
-| `window` | `int` | `60` | Time window (seconds) |
+| `window` | `int` | `60` | Time window in seconds |
 | `mod_multiplier` | `int` | `3` | Mod quota multiplier relative to regular users |
-| `random` | `int` | `10` | Max number of `random` calls per window (regular users) |
-| `uuid` | `int` | `10` | Max number of `uuid` calls per window (regular users) |
-| `"2file"` | `int` | `10` | Max number of `to-file` calls per window (YAML key name, internal field `to_file`) |
+| `modules` | `map` | Built-in command quotas | Default quota keyed by module name |
+| `commands` | `map` | Built-in command quotas | Quota keyed by command or full subcommand name |
 
-::: tip
-`"2file"` is the YAML key name of the `to-file` command (starts with a digit so it must be quoted); the internal Pydantic field name is `to_file`, mapped via `Field(alias="2file")`.
-:::
+Quota precedence: **subcommand > command > module** (e.g. `"emoji update"` > `emoji` > `modules.emoji`).
+
+The legacy `tools.ratelimit` / `emoji.ratelimit` sections are still accepted and migrated into the global `ratelimit` config.
 
 ## Discord API rate limit
 

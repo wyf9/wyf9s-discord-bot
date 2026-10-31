@@ -92,7 +92,7 @@ class EmojiCog(commands.Cog):
 
     @emoji_group.command(name="info", description=ls("emoji.cmd_info_desc"))
     async def emoji_info(self, interaction: discord.Interaction):
-        if not await self._check_rate_limit(interaction, "emoji-info"):
+        if not await self._check_rate_limit(interaction, "emoji info"):
             return
         await interaction.response.send_message(self._build_info_msg(interaction))
 
@@ -177,7 +177,7 @@ class EmojiCog(commands.Cog):
 
     @prefix_emoji.command(name="info")
     async def prefix_emoji_info(self, ctx: commands.Context):
-        if not await self._check_rate_limit(ctx, "emoji-info"):
+        if not await self._check_rate_limit(ctx, "emoji info"):
             return
         await ctx.send(self._build_info_msg(ctx))
 
@@ -215,21 +215,16 @@ class EmojiCog(commands.Cog):
     # ========== Shared Logic ==========
 
     async def _check_rate_limit(self, source, command: str) -> bool:
-        rl = self.c.emoji.ratelimit
-        if not rl.enabled:
-            return True
         user = source.user if isinstance(source, discord.Interaction) else source.author
-        if u.is_admin(user, self.c):
-            return True
-        base = rl.limit_for(command)
-        if base is None:
-            return True
         rate_limiter = getattr(self.bot, "rate_limiter", None)
         if not rate_limiter:
             return True
         guild = getattr(source, "guild", None)
-        limit = base * rl.mod_multiplier if u.is_mod(user, self.c, guild) else base
-        allowed, retry_after = rate_limiter.hit((command, user.id), limit, rl.window)
+        params = u.resolve_rate_limit(self.c, user, guild, "emoji", command)
+        if params is None:
+            return True
+        limit, window = params
+        allowed, retry_after = rate_limiter.hit((command, user.id), limit, window)
         if not allowed:
             await u.send_msg(
                 source,

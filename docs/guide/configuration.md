@@ -101,6 +101,20 @@ log:
   retention: "3 days"
   discord_level: "INFO"       # discord.py 库自身日志级别 (独立于 level)
 
+# 指令限速 (全局)
+ratelimit:
+  enabled: true
+  window: 60
+  mod_multiplier: 3
+  modules:
+    emoji: 10
+  commands:
+    random: 10
+    uuid: 10
+    to-file: 10
+    e: 10
+    "emoji info": 10
+
 # 审计日志 (无指令, 服务模块)
 # 仅记录 [ADMIN]/[MOD] 指令、服务器 scope 修改、反垃圾自动处置与错误
 audit:
@@ -121,13 +135,6 @@ tools:
   enabled: false
   slash: true
   prefix: true
-  ratelimit:
-    enabled: true
-    window: 60
-    mod_multiplier: 3
-    random: 10
-    uuid: 10
-    "2file": 10               # to-file 的 YAML 键名 (兼容旧称)
 
 # 频道锁定模块
 lock:

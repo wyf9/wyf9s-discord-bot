@@ -167,13 +167,6 @@ tools:
   enabled: false
   slash: true
   prefix: true
-  ratelimit:              # only applies to random / uuid / to-file
-    enabled: true
-    window: 60            # time window (seconds)
-    mod_multiplier: 3     # mod quota multiplier; admin is exempt from rate limiting
-    random: 10
-    uuid: 10
-    "2file": 10           # YAML key name for to-file (starts with a digit, must be quoted)
 ```
 
 | Field | Type | Default | Description |
@@ -181,4 +174,3 @@ tools:
 | `enabled` | `bool` | `false` | Whether to enable the tools module |
 | `slash` | `bool` | `true` | Whether to register slash commands |
 | `prefix` | `bool` | `true` | Whether to register prefix commands |
-| `ratelimit.*` | — | — | Rate limit configuration, see the [Rate Limit page](/en/guide/rate-limit) |

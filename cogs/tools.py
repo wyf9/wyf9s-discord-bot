@@ -665,20 +665,13 @@ class ToolsCog(commands.Cog):
             )
 
     async def _check_rate_limit(self, source, command: str) -> bool:
-        rl = self.c.tools.ratelimit
-        if not rl.enabled:
-            return True
         user = source.user if isinstance(source, discord.Interaction) else source.author
-        if u.is_admin(user, self.c):
-            return True
-        base = rl.limit_for(command)
-        if base is None:
-            return True
         guild = getattr(source, "guild", None)
-        limit = base * rl.mod_multiplier if u.is_mod(user, self.c, guild) else base
-        allowed, retry_after = self.rate_limiter.hit(
-            (command, user.id), limit, rl.window
-        )
+        params = u.resolve_rate_limit(self.c, user, guild, "tools", command)
+        if params is None:
+            return True
+        limit, window = params
+        allowed, retry_after = self.rate_limiter.hit((command, user.id), limit, window)
         if not allowed:
             await u.send_msg(
                 source,

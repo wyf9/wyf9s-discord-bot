@@ -265,6 +265,28 @@ def is_mod(
     )
 
 
+def resolve_rate_limit(
+    config: "ConfigModel",
+    user: discord.User | discord.Member,
+    guild: discord.Guild | None,
+    module: str,
+    command: str | None = None,
+) -> tuple[int, float] | None:
+    """
+    根据全局限速配置计算额度
+
+    :return: (窗口内最大次数, 窗口秒数), None 表示不限速
+    """
+    rl = config.ratelimit
+    if not rl.enabled or is_admin(user, config):
+        return None
+    base = rl.resolve(module, command)
+    if base is None:
+        return None
+    limit = base * rl.mod_multiplier if is_mod(user, config, guild) else base
+    return limit, rl.window
+
+
 # ========== Declarative Permission Control ==========
 
 

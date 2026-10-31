@@ -26,6 +26,26 @@ log:
   retention: "3 days"         # 日志保留时间
 
 # =============================================================================
+# 指令限速 (全局限流)
+# 额度优先级: commands 中的子指令 > commands 中的指令 > modules 中的模块
+# admin (admins.users) 不受限速; mod 的额度为普通用户的 mod_multiplier 倍
+# =============================================================================
+ratelimit:
+  enabled: true               # 是否启用应用层限速
+  window: 60                  # 时间窗口 (秒)
+  mod_multiplier: 3           # mod 的额度倍数 (相对普通用户); admin 不受限速
+  modules:                    # 按模块的默认额度
+    emoji: 10                 # 例: emoji 模块下的指令默认 10 次 / 窗口
+  commands:                   # 按指令 / 子指令的额度
+    random: 10                # /random
+    uuid: 10                  # /uuid
+    to-file: 10               # /to-file
+    e: 10                     # /e
+    "emoji info": 10          # /emoji info
+    # vc: 20                  # 例: /vc 及其子指令默认 20 次 / 窗口
+    # "emoji update": 5       # 例: /emoji update 子指令单独设为 5 次 / 窗口
+
+# =============================================================================
 # 审计日志 (无指令, 服务模块)
 # 仅记录有意义的管理 / 服务器级操作: [ADMIN]/[MOD] 指令、服务器 scope 修改、
 # 反垃圾自动处置与错误; 用户 scope 普通指令 (/random /uuid /to-file 等) 不记录
@@ -48,15 +68,6 @@ emoji:
   prefix: true
   base_url: "https://ghimg.siiway.top/emoji"
   max_results: 25
-  ratelimit:                  # 限速 (/e / /emoji info)
-    enabled: true
-    window: 60
-    mod_multiplier: 3
-    random: 10
-    uuid: 10
-    "2file": 10
-    e: 10
-    emoji_info: 10
 
 # =============================================================================
 # 工具/管理指令模块
@@ -67,13 +78,6 @@ tools:
   slash: true
   prefix: true
   clear_single_delete_max: 20 # clear-message: 超 14 天不可批量删的消息数 <= 此值时回退逐条删除 (0 = 禁用)
-  ratelimit:                  # 限速 (仅作用于 random / uuid / to-file)
-    enabled: true             # 是否启用限速
-    window: 60                # 时间窗口 (秒)
-    mod_multiplier: 3         # mod 的额度倍数 (相对普通用户); admin 不受限速
-    random: 10                # random: 普通用户每窗口最大次数
-    uuid: 10                  # uuid:   普通用户每窗口最大次数
-    "2file": 10               # to-file:  普通用户每窗口最大次数 (YAML 键: "2file")
 
 # =============================================================================
 # 频道锁定模块 (使用 Cog 子命令)
