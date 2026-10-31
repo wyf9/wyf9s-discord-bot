@@ -28,9 +28,12 @@ ratelimit:
 
 `resolve_rate_limit()` 还会处理：限速总开关、Admin 豁免、Mod 额度倍数。
 
-## 旧配置兼容
+## 默认值与旧配置兼容
 
+- 完全没有配置 `ratelimit`（也没有旧版段）时，沿用旧版默认指令额度（`random` / `uuid` / `to-file` / `e` / `emoji info` 各 10）。
+- 一旦显式写入顶层 `ratelimit`，只使用其中列出的 `modules` / `commands`，不再隐式继承默认指令额度。
 - 顶层没有 `ratelimit` 时，根 `ConfigModel` 的 `normalize_legacy` 会把 `tools.ratelimit` / `emoji.ratelimit` 迁移为顶层命令额度。
+- 直接写在顶层 `ratelimit` 下的旧式指令键（如 `random: 5`、`"2file": 3`）也会迁入 `commands`。
 - 旧字段 `2file` / `to_file` → `to-file`，`emoji_info` → `emoji-info`；`emoji info` 也接受。
 - 旧模块 `enabled: false` 只会移除该模块的旧指令额度，不影响其他模块。
 - 顶层已存在 `ratelimit` 时以新配置为准，不再合并旧模块段。

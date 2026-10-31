@@ -62,7 +62,7 @@ ratelimit:
 
 额度优先级：**子指令 > 指令 > 模块**（如 `"emoji update"` > `emoji` > `modules.emoji`）。
 
-旧版写在 `tools.ratelimit` / `emoji.ratelimit` 下的配置仍然兼容，会由配置层自动迁移到全局 `ratelimit`。
+旧版写在 `tools.ratelimit` / `emoji.ratelimit` 下的配置仍然兼容，会由配置层自动迁移到全局 `ratelimit`。如果完全不配置 `ratelimit`，则沿用旧版默认指令额度；一旦显式配置，就只使用其中列出的 `modules` / `commands`。
 
 ## Discord API Rate Limit
 

@@ -81,6 +81,14 @@ _LEGACY_RATELIMIT_KEYS: dict[str, str] = {
     "emoji_info": "emoji-info",
 }
 
+_DEFAULT_RATE_LIMIT_COMMANDS: dict[str, int] = {
+    "random": 10,
+    "uuid": 10,
+    "to-file": 10,
+    "e": 10,
+    "emoji-info": 10,
+}
+
 _COMMAND_ALIASES: dict[str, str] = {
     # 下划线写法统一转为横线, 便于沿用旧字段名
     "2file": "to-file",
@@ -105,8 +113,6 @@ class _RateLimitConfigModel(BaseModel):
     - 额度优先级: commands 中的子指令 > commands 中的指令 > modules 中的模块额度
     """
 
-    model_config = ConfigDict(extra="allow")
-
     enabled: bool = True
     """是否启用限速"""
 
@@ -119,14 +125,22 @@ class _RateLimitConfigModel(BaseModel):
     modules: dict[str, int] = {}
     """按模块的默认额度, key 为模块名 (cog 名)"""
 
-    commands: dict[str, int] = {
-        "random": 10,
-        "uuid": 10,
-        "to-file": 10,
-        "e": 10,
-        "emoji-info": 10,
-    }
+    commands: dict[str, int] = {}
     """按指令的额度, key 为指令名 / 子指令全名 (如 "emoji update")"""
+
+    @model_validator(mode="before")
+    def normalize_flat_commands(cls, data):
+        """兼容直接写在顶层 ratelimit 下的旧式指令键"""
+        if not isinstance(data, dict):
+            return data
+        data = dict(data)
+        commands = dict(data.get("commands") or {})
+        for old, new in _LEGACY_RATELIMIT_KEYS.items():
+            if old in data:
+                commands.setdefault(new, data.pop(old))
+        if commands:
+            data["commands"] = commands
+        return data
 
     @field_validator("commands", "modules", mode="before")
     def normalize_limits(cls, v):
@@ -569,16 +583,12 @@ class ConfigModel(BaseModel):
                 if isinstance(value, dict):
                     legacy.append((section, value))
         if not legacy:
+            # 没有任何显式限速配置时保留旧版默认指令额度
+            data["ratelimit"] = {"commands": dict(_DEFAULT_RATE_LIMIT_COMMANDS)}
             return data
         data["ratelimit"] = current = {}
 
-        commands = {
-            "random": 10,
-            "uuid": 10,
-            "to-file": 10,
-            "e": 10,
-            "emoji-info": 10,
-        }
+        commands = dict(_DEFAULT_RATE_LIMIT_COMMANDS)
         module_commands = {
             "emoji": {"e", "emoji-info"},
             "tools": {"random", "uuid", "to-file"},

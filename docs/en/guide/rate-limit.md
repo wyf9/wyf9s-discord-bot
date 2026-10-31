@@ -62,7 +62,7 @@ ratelimit:
 
 Quota precedence: **subcommand > command > module** (e.g. `"emoji update"` > `emoji` > `modules.emoji`).
 
-The legacy `tools.ratelimit` / `emoji.ratelimit` sections are still accepted and migrated into the global `ratelimit` config.
+The legacy `tools.ratelimit` / `emoji.ratelimit` sections are still accepted and migrated into the global `ratelimit` config. If `ratelimit` is omitted entirely, the legacy default command quotas still apply; once it is configured explicitly, only the listed `modules` / `commands` are used.
 
 ## Discord API rate limit
 
