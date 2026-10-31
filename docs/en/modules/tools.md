@@ -88,15 +88,9 @@ Batch clear messages by various filter conditions, supporting a single channel o
 
 #### Forum / Thread Clearing
 
-> A thread is a special channel type; each thread under a forum channel is an independent sub-channel.
-
-- **Clear messages within threads (Behavior A)**: When the target is a user and `channel` points to a forum channel (or `scope=server` traverses into a forum), the threads within the forum are automatically scanned and matching messages inside them are deleted.
-  - Use `forum_scan_count` to control how many threads to scan per forum (sorted by most recent activity); if empty: specifying a time range scans only threads active within that range, and specifying a message count fetches the corresponding number of messages from each scanned thread.
-- **Delete an entire thread (Behavior B)**: When `delete_threads=true`, an entire thread created by the target user (matching the filter conditions) is deleted directly.
-  - Deleting a thread will **also delete all messages within the thread** (even those not sent by the target user), so `delete_threads` must be explicitly set to `true` for this to run.
-- **Specify a range by thread ID**: If `start` / `end` matches a thread (a message is tried first, then a thread if no message matches), threads within the forum that meet the conditions are deleted using the thread creation time as the range boundary (requires `delete_threads=true`).
-  - If the resource types pointed to by `start` / `end` differ (one is a message, one is a thread) or they are not in the same forum, an error is raised.
-  - When `start` / `end` are message IDs, they do not participate in thread deletion (messages cannot match threads).
+- **Clear messages within threads**: when the target channel is a forum (or `scope=server`), forum threads are scanned and matching messages inside them are deleted. Use `forum_scan_count` to limit how many threads are scanned per forum.
+- **Delete an entire thread**: with `delete_threads=true`, threads created by the target user that match the filters are deleted, **along with every message inside them**. This is why it is disabled by default.
+- **Specify a range by thread ID**: `start` / `end` also accept thread IDs and use the thread creation time as the boundary; `delete_threads=true` is required.
 
 #### Constraints
 
@@ -155,10 +149,6 @@ Move the current or specified channel into a category, or before / after another
 ::: tip `/sync` has moved to [Admin Commands](/en/modules/admin)
 Command sync `/sync` and hot reload `/reload` are now provided by `cogs/admin.py`.
 :::
-
-## Rate Limiting
-
-`random` / `uuid` / `to-file` are subject to sliding-window rate limiting. Admins are exempt, and Mods get `mod_multiplier` times the quota of regular users. See [Rate Limit](/en/guide/rate-limit) for details.
 
 ## Configuration
 

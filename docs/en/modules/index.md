@@ -8,52 +8,52 @@ The bot is composed of multiple modules, all **enabled on demand** via the `enab
 
 ## Module List
 
-| Module | Config Key | Type | Commands | Docs |
-| --- | --- | --- | --- | --- |
-| Tools / Admin | `tools` | Command | `random` `uuid` `to-file` `delete` `clear-message` `move-channel` | [View](/en/modules/tools) |
-| Emoji | `emoji` | Command | `/e` `/emoji info` `/emoji update` | [View](/en/modules/emoji) |
-| Channel Lock | `lock` | Command | `/lock now` `/lock unlock` `/lock plan` `/lock unplan` | [View](/en/modules/lock) |
-| Voice Channel | `voicechannel` | Command | `/vc join` `/vc leave` | [View](/en/modules/voice) |
-| Admin Commands | — | Command | `/sync` `/reload` | [View](/en/modules/admin) |
-| Dynamic Permissions | `perm` | Command | `/perm add` `/perm rm` `/perm show` | [View](/en/modules/perm) |
-| Announcement Push | `announce` | Command | `/subscribe` | [View](/en/modules/announce) |
-| Chat Enhance | `chatenhance` | Command / Event | `/enhance enable` `/enhance disable` `/enhance list` | [View](/en/modules/chatenhance) |
-| Multilingual | — (always enabled) | Command | `/lang` | [View](/en/modules/lang) |
-| Auto Management | `rmmsg` / `rmtodo` | Event | None | [View](/en/modules/manage) |
-| Anti-spam | `antispam` | Event | None | [View](/en/modules/antispam) |
-| Audit Log | `audit` | Service | None | [View](/en/modules/audit) |
+| Module | Config Key | Type | Commands |
+| --- | --- | --- | --- |
+| [Tools / Admin](/en/modules/tools) | `tools` | Command | `random` `uuid` `to-file` `delete` `clear-message` `move-channel` |
+| [Emoji](/en/modules/emoji) | `emoji` | Command | `/e` `/emoji info` `/emoji update` |
+| [Channel Lock](/en/modules/lock) | `lock` | Command | `/lock now` `/lock unlock` `/lock plan` `/lock unplan` |
+| [Voice Channel](/en/modules/voice) | `voicechannel` | Command | `/vc join` `/vc leave` |
+| [Admin Commands](/en/modules/admin) | — | Command | `/sync` `/reload` |
+| [Dynamic Permissions](/en/modules/perm) | `perm` | Command | `/perm add` `/perm rm` `/perm show` |
+| [Announcement Push](/en/modules/announce) | `announce` | Command | `/subscribe` |
+| [Chat Enhance](/en/modules/chatenhance) | `chatenhance` | Command / Event | `/enhance enable` `/enhance disable` `/enhance list` |
+| [Multilingual](/en/modules/lang) | — (always enabled) | Command | `/lang` |
+| [Auto Management](/en/modules/manage) | `rmmsg` / `rmtodo` | Event | None |
+| [Anti-spam](/en/modules/antispam) | `antispam` | Event | None |
+| [Audit Log](/en/modules/audit) | `audit` | Service | None |
 
 ## Command Quick Reference
 
-| Command | Module | Permission | Rate Limit | Description |
-| --- | --- | --- | --- | --- |
-| `/random` | tools | Everyone | ✅ | Generate a random number within a range |
-| `/uuid` | tools | Everyone | ✅ | Generate a UUID (ephemeral message) |
-| `/to-file` | tools | Everyone | ✅ | Send text as a file |
-| `/delete` | tools | Mod | — | Delete a single message |
-| `/clear-message` | tools | Mod | — | Batch clear messages by conditions |
-| `/move-channel` | tools | Mod | — | Move channel position / category |
-| `/e` | emoji | Everyone | — | Send an emoji from the library |
-| `/emoji info` | emoji | Everyone | — | View emoji library info |
-| `/emoji update` | emoji | Admin | — | Update emoji library data |
-| `/lock now` | lock | Mod | — | Lock a channel |
-| `/lock unlock` | lock | Mod | — | Unlock a channel |
-| `/lock plan` | lock | Mod | — | Schedule lock / unlock |
-| `/lock unplan` | lock | Mod | — | Cancel a schedule |
-| `/vc join` | voice | Whitelist / Mod | — | Bot joins a voice channel |
-| `/vc leave` | voice | Whitelist / Mod | — | Bot leaves a voice channel |
-| `/sync` | admin | Config admin | — | Sync the slash command list |
-| `/reload` | admin | Admin | 15s CD | Hot reload modules |
-| `/perm add` | perm | Admin | — | Add a permission rule |
-| `/perm rm` | perm | Admin | — | Remove a permission rule |
-| `/perm show` | perm | Admin | — | View permission rules |
-| `/subscribe` | announce | Mod | — | Follow an announcement channel |
-| `/enhance enable` | chatenhance | Admin | — | Enable a chat enhance function |
-| `/enhance disable` | chatenhance | Admin | — | Disable a chat enhance function |
-| `/enhance list` | chatenhance | Admin | — | View chat enhance function status |
-| `/lang` | lang | Everyone (server scope requires admin permission) | ✅ | Switch / view language preference |
+| Command | Permission | Rate Limit | Description |
+| --- | --- | --- | --- |
+| `/random` | Everyone | Per-command quota | Generate a random number within a range |
+| `/uuid` | Everyone | Per-command quota | Generate a UUID (ephemeral message) |
+| `/to-file` | Everyone | Per-command quota | Send text as a file |
+| `/delete` | Mod | — | Delete a single message |
+| `/clear-message` | Mod | — | Batch clear messages by conditions |
+| `/move-channel` | Mod | — | Move channel position / category |
+| `/e` | Everyone | Per-module quota | Send an emoji from the library |
+| `/emoji info` | Everyone | Per-command quota | View emoji library info |
+| `/emoji update` | Admin | Per-command quota | Update emoji library data |
+| `/lock now` | Mod | — | Lock a channel |
+| `/lock unlock` | Mod | — | Unlock a channel |
+| `/lock plan` | Mod | — | Schedule lock / unlock |
+| `/lock unplan` | Mod | — | Cancel a schedule |
+| `/vc join` | Allowlist / Mod | — | Bot joins a voice channel |
+| `/vc leave` | Allowlist / Mod | — | Bot leaves a voice channel |
+| `/sync` | Admin | — | Sync the slash command list |
+| `/reload` | Admin | 15s CD | Hot reload modules |
+| `/perm add` | Admin | — | Add a permission rule |
+| `/perm rm` | Admin | — | Remove a permission rule |
+| `/perm show` | Admin | — | View permission rules |
+| `/subscribe` | Mod | — | Follow an announcement channel |
+| `/enhance enable` | Admin | — | Enable a chat enhance function |
+| `/enhance disable` | Admin | — | Disable a chat enhance function |
+| `/enhance list` | Admin | — | View chat enhance function status |
+| `/lang` | Everyone (server scope requires admin permission) | — | Switch / view language preference |
 
-> For the permission system, see [Permission System](/en/guide/permissions); for rate limiting, see [Rate Limit](/en/guide/rate-limit).
+> Rate-limit quotas are configured under `ratelimit` in `config.yaml`; see [Rate Limiting](/en/guide/rate-limit). For permissions, see [Permission System](/en/guide/permissions).
 
 ## Dual Command Mode
 

@@ -6,15 +6,9 @@ Manage dynamic permission rules via the `/perm` command, stored in `perm.yaml`. 
 - **Source files**: `cogs/perm.py`, `perm.py`
 - **Data file**: `perm.yaml`
 
-## How It Works
+## Rule Granularity
 
-Dynamic permissions act as a **supplement** to `mods` / `admins` in `config.yaml`:
-
-1. Check `config.yaml` first: a match passes (shown as :lock: locked)
-2. If no match, fall back to `perm.yaml` rules
-3. `config.yaml` always takes precedence and cannot be overridden by `/perm`
-
-Rules can grant three levels of granularity:
+Dynamic permissions act as a **supplement** to `mods` / `admins` in `config.yaml`, which always takes precedence (its rules appear as :lock: in `/perm show`). Rules can grant three levels of granularity:
 
 - **Single module** (`module`): all commands under that module.
 - **Single command** (`command`): only that command.
@@ -31,7 +25,6 @@ Rules can grant three levels of granularity:
 | Permission | Admin (config admins) or server administrator (server scope only) |
 | Parameter | `user` / `role` (one required), `module` (supports dropdown autocomplete) / `command` (one of the two, **neither set = grant mod permission**), `global` (bool option), `private` (bool option) |
 
-- The `module` parameter supports **dynamic autocomplete** (listed live from the `cogs/` directory, cached for 1 second).
 - When **neither `module` nor `command`** is specified, the user or role is granted "mod permission" — equivalent to the `mods` list in the config file, with all mod-level commands available.
 - Server administrators can only add rules with `global=False`.
 

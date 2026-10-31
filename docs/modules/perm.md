@@ -6,15 +6,9 @@
 - **源文件**：`cogs/perm.py`、`perm.py`
 - **数据文件**：`perm.yaml`
 
-## 工作原理
+## 规则粒度
 
-动态权限作为 `config.yaml` 中 `mods` / `admins` 的**补充**：
-
-1. 先检查 `config.yaml`：命中则通过（显示 :lock: 锁定）
-2. 若未命中，回退到 `perm.yaml` 规则
-3. `config.yaml` 始终优先，无法被 `/perm` 覆盖
-
-规则可授予三种粒度：
+动态权限作为 `config.yaml` 中 `mods` / `admins` 的**补充**，`config.yaml` 始终优先（其规则在 `/perm show` 中显示为 :lock:）。规则可授予三种粒度：
 
 - **单个模块**（`module`）：该模块下的所有指令。
 - **单个指令**（`command`）：仅该指令。
@@ -31,7 +25,6 @@
 | 权限 | Admin（config admins）或服务器管理员（仅限 server scope） |
 | 参数 | `user` / `role`（二选一必填）、`module`（支持下拉自动补全）/ `command`（二选一，**都不填 = 授予 mod 权限**）、`global`（bool 选项）、`private`（bool 选项） |
 
-- `module` 参数支持**动态自动补全**（从 `cogs/` 目录实时列出，缓存 1 秒）。
 - **不指定 `module` 与 `command`** 时，授予该用户或身份组「mod 权限」——效果等同配置文件 `mods` 名单，所有 mod 级指令均可用。
 - 服务器管理员仅可添加 `global=False` 的规则。
 

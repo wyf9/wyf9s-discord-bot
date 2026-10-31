@@ -5,19 +5,15 @@ A channel-level anti-spam module based on the `on_message` event, with **no comm
 - **Config key**: `antispam`
 - **Source file**: `cogs/antispam.py` (reuses the cleanup capability of `modules/clear_message.py`)
 
-## Decision Flow
+## Decision Rules
 
-For every **non-bot** message in a channel that has rules configured:
+For every user message in a channel with a configured rule:
 
-1. Ignore bot messages and direct messages.
-2. Begin evaluation once the channel's `spam_catcher` rule is hit.
-3. If the author has any role in `ignored_roles` → **skip**.
-4. Determine the author's category:
-   - **Stranger account (spammer)**: has no roles at all, **OR** all of its roles belong to `stranger_roles`.
-   - **Normal account (hacked, suspected-compromised)**: all other cases.
-5. Execute the corresponding action by category (`spammer` / `hacked`).
-6. Optional: clean up the user's recent messages (`clear_message`), notify publicly in the channel (`public_log`).
-7. Write the result (success / failure) to the [audit log](/en/modules/audit) (`antispam-auto-catch`, marked as an automatic operation).
+- Authors with any role in `ignored_roles` are **skipped**.
+- **Stranger account**: has no roles, or all its roles belong to `stranger_roles`.
+- **Suspected compromised account**: every other case.
+
+Each category runs the action configured in `spammer` / `hacked`. Optionally the bot clears recent messages (`clear_message`), posts a public notice (`public_log`), and writes the result to the [audit log](/en/modules/audit).
 
 ## Actions and Required Permissions
 
@@ -38,37 +34,16 @@ If the bot already has the corresponding permission but the operation is still d
 - Whether to notify publicly is controlled by `public_log`.
 - A tag like `-# *(antispam-action/{user_id}/{action})*` is appended at the end of the notice for later locating and undoing.
 
-## Message Snapshot (Audit)
-
-When writing to the audit log, the triggering message is **forwarded** to the audit channel and a `Processing...` placeholder message is replied; once cleanup and other processing are complete, that placeholder message is edited into the final "Automated Action Log" (with an undo button, and a fixed-format tag above). The message looks like:
-
-```
--# *(antispam-action/992995849946804304/ban)*
-[Automated Action Log embed]
-```
-
-- It uses **forwarding** rather than building a snapshot: forwarding keeps a copy of the content in the audit channel, so even if the original message is subsequently cleaned up and deleted, images / attachments will not 404.
-- Forwarding must complete **before** the original message is cleaned up and deleted; if forwarding fails, it falls back to building a self-made snapshot embed.
+The triggering message in the audit log is kept as a forwarded copy (so images / attachments remain available after the original is cleaned), together with an undo button and a tag like `-# *(antispam-action/{user_id}/{action})*`.
 
 ## Undoing Actions (Unban / Unmute)
 
-Mods/Admins can undo antispam actions via the buttons on the audit log embed. The undo flow is **stateless** — it does not rely on a database, only on searching for the tag.
+Mods/Admins can undo antispam actions via the buttons on the audit log embed. After an undo, every audit card carrying the same tag is marked as completed as well.
 
-### Unban
+### Unban / Unmute
 
-1. Click the **Unban** button → the bot first checks if the user is still banned.
-2. If already manually unbanned → the button changes to **Expired** (gray, disabled), no further actions.
-3. If still banned → performs the unban, the button changes to **{action} by {actor}**.
-
-### Unmute
-
-1. Click the **Unmute** button → the bot first checks if the member is still timed out.
-2. If the mute has already expired or been manually removed → the button changes to **Expired** (gray, disabled), no further actions.
-3. If still timed out → removes the timeout, the button changes to **{action} by {actor}**.
-
-### Cross-Channel Sync
-
-After undoing, the bot searches all audit log channels (global + per-server) for messages with the same tag and automatically disables their buttons. If `public_log` is enabled, the public notice is also edited, with the format changing to:
+- Click **Unban** / **Unmute**: if the action already expired or was manually reverted, the button becomes **Expired** (disabled); otherwise the action is reverted and the button is marked **handled by {mod}**.
+- If `public_log` is enabled, the public notice is updated to:
 
 ```
 🚨 Antispam triggered: <@user> (`name`) -> ~~Spammer/ban~~ -> **[Unban by moderator](audit-log-link)**
@@ -81,7 +56,7 @@ After undoing, the bot searches all audit log channels (global + per-server) for
 ### Notes
 
 - **Kick** actions cannot be undone — their audit cards have no undo button.
-- Errors from inaccessible channels during cross-channel sync are silently ignored.
+- Inaccessible channels are skipped silently during cross-channel sync.
 
 ## Configuration
 

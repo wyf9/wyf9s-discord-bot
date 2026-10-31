@@ -31,14 +31,7 @@ Preferences are persisted to `lang_settings.yaml` (auto-generated).
 
 ## Coverage
 
-Localization is divided into two types of text, handled differently:
-
-| Type | Example | Localization method |
-| --- | --- | --- |
-| **Runtime messages** | Command replies, errors, audit logs, anti-spam notices | Resolved **per-user / per-server** by the priority above |
-| **Slash command / parameter descriptions** | The descriptive text in Discord's command panel | Via discord.py command localization (`locale_str` + `Translator`), displayed according to the user's **Discord client language** |
-
-> Command **names** (e.g. `/random`) stay unchanged and are not localized.
+Runtime messages such as command replies, errors, and audit logs use the priority above. Slash command and parameter descriptions follow the user's **Discord client language**; command names stay unchanged.
 
 ## Supported Languages
 
@@ -47,10 +40,3 @@ Localization is divided into two types of text, handled differently:
 | `zh` | Simplified Chinese (default) | `zh-CN` / `zh-TW` |
 | `en` | English | `en-US` / `en-GB` |
 
-## Adding a Language
-
-1. Copy `lang/zh.yaml` to `lang/<code>.yaml` and translate all its values (keeping the keys unchanged).
-2. Add `<code>` to `SUPPORTED_LANGS` in `i18n.py`.
-3. If you want Discord client language linkage, add the locale mapping in `_LOCALE_TO_LANG` in `i18n.py`.
-
-> `lang/zh.yaml` and `lang/en.yaml` must keep **exactly the same keys**; when adding new text, both files must be updated in sync.

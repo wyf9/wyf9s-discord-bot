@@ -5,10 +5,6 @@ Browse, search, and send emojis from a remote emoji source (as files / stickers)
 - **Config key**: `emoji`
 - **Source file**: `cogs/emoji.py`
 
-## How It Works
-
-On startup (`on_ready`), the module fetches the emoji list from `base_url/emoji.json` and caches the list of emoji names for search and autocomplete. When sending an emoji, the image is downloaded by name from `base_url/<name>` and sent as a file (requests go through the `proxy` configuration).
-
 ## Commands
 
 ### `/e` — Send an Emoji

@@ -15,16 +15,12 @@ Only **meaningful admin / server-level operations** are recorded, to avoid usele
 
 Ordinary user-scope commands (such as `/random`, `/uuid`, `/to-file`, `/lang` (user scope)) are **not recorded**.
 
-## How It Works
+## Where Logs Are Sent
 
-After performing the operations above, other modules call `AuditLogger.log(...)`, and the log is sent to:
+- **Global channel**: `global_channel` receives operations from all servers.
+- **Per-server channel**: a channel configured for the corresponding server in `guilds`.
 
-- **Global channel**: `global_channel`, where operations from all servers are sent.
-- **Per-server channel**: a channel configured individually for the corresponding server in `guilds`.
-
-The two are **independent**: if both are configured, both channels receive the log (deduplicated per channel, with the global one taking precedence). The embed for each language is built only once and cached.
-
-The bot needs **Send Messages / Embed Links** permissions in the log channel; the target must be a text channel or a thread, otherwise it will be skipped with a warning.
+The two are **independent**: if both are configured, both channels receive the log. The bot needs **Send Messages / Embed Links** permissions in the log channel.
 
 ## Log Content
 
@@ -37,7 +33,7 @@ Each log is an embed containing (displayed in the configured language):
 - **Detail**: operation description (max 1024 characters).
 - **Timestamp** (UTC).
 
-## Which Operations Are Recorded
+## Recorded Operations
 
 | Source module | Action name |
 | --- | --- |

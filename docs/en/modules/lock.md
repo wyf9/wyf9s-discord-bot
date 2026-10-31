@@ -6,15 +6,9 @@ Lock / unlock channels (preventing `@everyone` from speaking / joining), with su
 - **Source file**: `cogs/lock.py`
 - **Data file**: `schedules.yaml` (persistence for scheduled locks, auto-generated)
 
-## How Locking Works
+## Required Permissions
 
-It works by modifying the channel's **permission overwrites** for `@everyone` (`default_role`):
-
-- Text channels: `send_messages` / `send_messages_in_threads` are set to deny.
-- Voice / stage channels: `connect` is additionally set to deny.
-- Unlocking resets the above permission overwrites to "inherit (None)".
-
-Therefore the bot needs **Manage Roles / Manage Channels** related permissions, with a sufficient role hierarchy.
+The bot needs **Manage Channels** and a role hierarchy above the target channel. Locking denies `@everyone` permission to send messages (and to connect in voice channels); unlocking restores the inherited permissions.
 
 ## Commands
 
@@ -66,7 +60,6 @@ Set a scheduled lock / unlock plan for a channel, supporting one-time and recurr
   - Weekdays: `mon,tue,wed,thu,fri,sat,sun` (also supports Chinese `周一`…`周日`)
   - Days of the month: `1,2,3` or range `1-5`
 - One-time schedules are cleared automatically after execution; recurring schedules are kept until `cycle_end` is passed.
-- The scheduler **checks once per minute** (started after `on_ready`).
 
 #### Prefix Command Flags
 

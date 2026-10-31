@@ -11,6 +11,9 @@ export default defineConfig({
   cleanUrls: true,
   ignoreDeadLinks: true,
 
+  // Internal notes for AI agents / maintainers — never shipped to the site.
+  srcExclude: ['agents/**'],
+
   head: [
     ['meta', { name: 'theme-color', content: '#5865F2' }],
     ['link', { rel: 'icon', href: '/favicon.png' }],

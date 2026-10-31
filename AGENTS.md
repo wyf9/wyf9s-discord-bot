@@ -57,10 +57,24 @@ cogs/                # Command modules (discord.py Cogs, loaded in main.py COG_L
   perm.py            # /perm dynamic permission management
   announce.py        # /subscribe announcement following
   lang.py            # /lang language preference
+  chatenhance.py     # Chat enhance (autofixupx) + /enhance
 modules/             # Shared, command-less services used by cogs
   audit.py           # Audit logging service (+ antispam action view)
   clear_message.py   # Bulk message clearing service
+docs/                # VitePress user docs (zh root + en/), excluded agents/
+  agents/            # Internal agent/maintainer notes (not built into the site)
+tests/               # unittest suites (run with .venv/bin/python -m unittest discover -s tests)
 ```
+
+## Module Maintenance Docs
+
+Start here before changing a module; these notes cover code entry points,
+shared state, and gotchas (not shipped to the user docs site):
+
+- [Config system](docs/agents/config.md) · [Rate limit](docs/agents/ratelimit.md) · [i18n](docs/agents/i18n.md) · [Docs maintenance](docs/agents/docs.md)
+- [tools](docs/agents/tools.md) · [emoji](docs/agents/emoji.md) · [lock](docs/agents/lock.md) · [voice](docs/agents/voice.md)
+- [admin](docs/agents/admin.md) · [perm](docs/agents/perm.md) · [announce](docs/agents/announce.md) · [chatenhance](docs/agents/chatenhance.md) · [lang](docs/agents/lang.md)
+- [manage](docs/agents/manage.md) · [antispam](docs/agents/antispam.md) · [audit](docs/agents/audit.md)
 
 ## Config System
 
@@ -144,7 +158,8 @@ All user-facing text must be localized. Never hardcode display strings.
 - `config.example.yaml` — example config with inline docs (the source of truth for config fields)
 - `README.md` / `README.en.md` — concise entry points only: keep the introduction and module overview inline, and make every other section point to the matching Chinese / English docs URL instead of duplicating documentation.
 - `docs/` — VitePress site (guides + per-module pages); keep command tables and the i18n guide in sync
-- `AGENTS.md` — developer/agent instructions only (keep non-overlapping with README)
+- `docs/agents/` — internal agent/maintainer notes; excluded from the VitePress build via `srcExclude`
+- `AGENTS.md` — global developer/agent rules only; module-specific notes live under `docs/agents/`
 
 ### Bilingual docs (i18n)
 
