@@ -65,11 +65,19 @@ admins:
 
 mods:
   users: []              # 全局 mod 列表
-  guilds: {}             # 按服务器 mod 列表 { guild_id: [user...] }
+  guilds: {}             # 按服务器 mod 配置
+  # 示例:
+  # guilds:
+  #   123456789012345678:
+  #     roles: ["Moderator", 987654321098765432]  # 身份组 ID / 名称
+  #     users: ["wyf9", 12345]                    # 用户 ID / 用户名
+  # 兼容旧格式: guilds: { 123456789012345678: ["wyf9", 12345] }
 ```
 
 - 名单项可以是**用户 ID**（数字）或**用户名**（字符串），两者皆可匹配。
 - `mods.guilds` 的 key 为服务器 ID（数字或字符串均可）。
+- `mods.guilds.<server>.roles` 支持**身份组 ID / 名称**，拥有任一配置身份组的成员即为该服务器的 mod。
+- 旧格式（直接写用户列表，如 `guilds: { 123: ["wyf9"] }`）仍然兼容，等同于只配置 `users`。
 
 详见[权限系统](/guide/permissions)。
 

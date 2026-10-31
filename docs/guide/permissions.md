@@ -25,10 +25,16 @@ perm.yaml       →  Mod (动态规则追加)
 
 ## 名单匹配规则
 
-`admins.users` / `mods.users` / `mods.guilds[*]` 中的每一项可以是：
+`admins.users` / `mods.users` / `mods.guilds.<server>.users` 中的每一项可以是：
 
 - **用户 ID**（数字，如 `123456789012345678`）
 - **用户名**（字符串，如 `"wyf9"`）
+- 数字字符串同样按 ID 匹配
+
+`mods.guilds.<server>.roles` 中的每一项可以是：
+
+- **身份组 ID**（数字）
+- **身份组名称**（字符串，如 `"Moderator"`）
 - 数字字符串同样按 ID 匹配
 
 ```python
@@ -39,10 +45,22 @@ def matches_identity(user, values):
         if isinstance(value, str) and value.isdigit() and user.id == int(value):
             return True
     return False
+
+
+def matches_role(member, values):
+    for value in values:
+        for role in member.roles:
+            if role.id == value or role.name == value:
+                return True
+            if isinstance(value, str) and value.isdigit() and role.id == int(value):
+                return True
+    return False
 ```
 
+`mods.guilds` 的旧格式（直接写用户列表）仍然兼容，等同于只配置 `users`。
+
 ::: warning
-用户名匹配基于 Discord 全局用户名（`user.name`），并非服务器昵称（`display_name`）。推荐优先使用**用户 ID** 以避免歧义。
+用户名匹配基于 Discord 全局用户名（`user.name`），并非服务器昵称（`display_name`）。推荐优先使用**用户 ID / 身份组 ID** 以避免歧义。
 :::
 
 ## 声明式权限控制

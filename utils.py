@@ -182,6 +182,17 @@ def matches_identity(
     return False
 
 
+def matches_role(member: discord.Member, values: "list[int | str]") -> bool:
+    """检查用户是否拥有 ID / 名称列表中的任意身份组"""
+    for value in values:
+        for role in member.roles:
+            if role.id == value or role.name == value:
+                return True
+            if isinstance(value, str) and value.isdigit() and role.id == int(value):
+                return True
+    return False
+
+
 def is_server_admin(user: discord.User | discord.Member) -> bool:
     """是否为服务器管理员 (拥有 administrator 权限)"""
     return isinstance(user, discord.Member) and user.guild_permissions.administrator
@@ -239,11 +250,14 @@ def is_mod(
         if matches_identity(user, config.mods.users):
             return True
         if guild is not None:
-            guild_users = config.mods.guilds.get(
-                guild.id, config.mods.guilds.get(str(guild.id), [])
+            guild_mods = config.mods.guilds.get(
+                guild.id, config.mods.guilds.get(str(guild.id))
             )
-            if matches_identity(user, guild_users):
-                return True
+            if guild_mods is not None:
+                if matches_identity(user, guild_mods.users):
+                    return True
+                if matches_role(user, guild_mods.roles):
+                    return True
     # 动态 mod 授权: perm.yaml 中 module/command 均为空的规则
     return bool(
         _perm_store is not None

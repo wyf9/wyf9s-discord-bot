@@ -596,14 +596,18 @@ class LockCog(commands.Cog):
                 if schedule.cycle_start:
                     try:
                         cy, cm, cd = _parse_day(schedule.cycle_start)
-                        if now_local.date() < datetime(cy, cm, cd).date():  # noqa: DTZ001  # date-only comparison is intentional
+                        if (
+                            now_local.date() < datetime(cy, cm, cd).date()
+                        ):  # date-only comparison is intentional
                             continue
                     except ValueError:
                         pass
                 if schedule.cycle_end:
                     try:
                         cy, cm, cd = _parse_day(schedule.cycle_end)
-                        if now_local.date() > datetime(cy, cm, cd).date():  # noqa: DTZ001  # date-only comparison is intentional
+                        if (
+                            now_local.date() > datetime(cy, cm, cd).date()
+                        ):  # date-only comparison is intentional
                             to_remove.append(idx)
                             continue
                     except ValueError:
@@ -630,10 +634,11 @@ class LockCog(commands.Cog):
                                 self._tr_guild(channel.guild, "lock.scheduled_locked")
                             )
                         overwrites = channel.overwrites_for(everyone)
-                        overwrites.send_messages = False
-                        overwrites.send_messages_in_threads = False
-                        if is_voice:
-                            overwrites.connect = False
+                        overwrites.update(
+                            send_messages=False,
+                            send_messages_in_threads=False,
+                            **({"connect": False} if is_voice else {}),
+                        )
                         await channel.set_permissions(
                             everyone, overwrite=overwrites, reason="Scheduled lock"
                         )
@@ -653,10 +658,11 @@ class LockCog(commands.Cog):
                 if unlock_dt and unlock_dt <= now:
                     try:
                         overwrites = channel.overwrites_for(everyone)
-                        overwrites.send_messages = None
-                        overwrites.send_messages_in_threads = None
-                        if is_voice:
-                            overwrites.connect = None
+                        overwrites.update(
+                            send_messages=None,
+                            send_messages_in_threads=None,
+                            **({"connect": None} if is_voice else {}),
+                        )
                         await channel.set_permissions(
                             everyone, overwrite=overwrites, reason="Scheduled unlock"
                         )

@@ -198,11 +198,17 @@ class ChatEnhanceCog(commands.Cog):
         if not content and not files:
             return
         try:
-            await message.reply(
-                content=content or None,
-                files=files or None,
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
+            if files:
+                await message.reply(
+                    content=content,
+                    files=files,
+                    allowed_mentions=discord.AllowedMentions.none(),
+                )
+            else:
+                await message.reply(
+                    content=content,
+                    allowed_mentions=discord.AllowedMentions.none(),
+                )
         except discord.HTTPException as e:
             l.warning(f"[chatenhance] Failed to reply ({lang}): {e}")
 

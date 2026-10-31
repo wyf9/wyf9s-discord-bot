@@ -25,10 +25,16 @@ Admin commands such as `/sync`, `/reload`, and `/emoji update` are **only availa
 
 ## List matching rules
 
-Each entry in `admins.users` / `mods.users` / `mods.guilds[*]` can be:
+Each entry in `admins.users` / `mods.users` / `mods.guilds.<server>.users` can be:
 
 - A **user ID** (a number, e.g. `123456789012345678`)
 - A **username** (a string, e.g. `"wyf9"`)
+- A numeric string is also matched as an ID
+
+Each entry in `mods.guilds.<server>.roles` can be:
+
+- A **role ID** (a number)
+- A **role name** (a string, e.g. `"Moderator"`)
 - A numeric string is also matched as an ID
 
 ```python
@@ -39,10 +45,22 @@ def matches_identity(user, values):
         if isinstance(value, str) and value.isdigit() and user.id == int(value):
             return True
     return False
+
+
+def matches_role(member, values):
+    for value in values:
+        for role in member.roles:
+            if role.id == value or role.name == value:
+                return True
+            if isinstance(value, str) and value.isdigit() and role.id == int(value):
+                return True
+    return False
 ```
 
+The legacy format of `mods.guilds` (a plain user list) is still supported and is equivalent to configuring only `users`.
+
 ::: warning
-Username matching is based on the Discord global username (`user.name`), not the server nickname (`display_name`). It is recommended to prefer **user IDs** to avoid ambiguity.
+Username matching is based on the Discord global username (`user.name`), not the server nickname (`display_name`). It is recommended to prefer **user IDs / role IDs** to avoid ambiguity.
 :::
 
 ## Declarative permission control

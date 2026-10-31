@@ -277,6 +277,16 @@ class _PermissionListConfigModel(BaseModel):
     """
 
 
+class _ScopedPermissionGuildConfigModel(BaseModel):
+    """按服务器配置的权限名单"""
+
+    users: list[int | str] = []
+    """允许的用户 ID / 用户名列表"""
+
+    roles: list[int | str] = []
+    """允许的身份组 ID / 名称列表"""
+
+
 class _ScopedPermissionListConfigModel(BaseModel):
     """
     支持全局和按服务器配置的权限名单
@@ -285,8 +295,24 @@ class _ScopedPermissionListConfigModel(BaseModel):
     users: list[int | str] = []
     """全局允许的用户 ID / 用户名列表"""
 
-    guilds: dict[int | str, list[int | str]] = {}
+    guilds: dict[int | str, _ScopedPermissionGuildConfigModel] = {}
     """按服务器配置的允许列表，key 为 guild id，可写数字或字符串"""
+
+    @field_validator("guilds", mode="before")
+    def normalize_guilds(cls, v):
+        if not isinstance(v, dict):
+            return v
+        result: dict = {}
+        for key, value in v.items():
+            # 旧格式: 直接写用户列表
+            if isinstance(value, list):
+                result[key] = {"users": value}
+            # 不在列表中的其他值 (如 null) 交给默认值处理
+            elif value is None:
+                result[key] = {}
+            else:
+                result[key] = value
+        return result
 
 
 class _ToolsConfigModel(BaseModel):

@@ -65,11 +65,19 @@ admins:
 
 mods:
   users: []              # Global mod list
-  guilds: {}             # Per-server mod list { guild_id: [user...] }
+  guilds: {}             # Per-server mod config
+  # Example:
+  # guilds:
+  #   123456789012345678:
+  #     roles: ["Moderator", 987654321098765432]  # Role IDs / names
+  #     users: ["wyf9", 12345]                    # User IDs / usernames
+  # Legacy format is still supported: guilds: { 123456789012345678: ["wyf9", 12345] }
 ```
 
 - List entries can be a **user ID** (a number) or a **username** (a string); either will match.
 - The keys of `mods.guilds` are server IDs (either a number or a string).
+- `mods.guilds.<server>.roles` accepts **role IDs / names**; members with any configured role are mods of that server.
+- The legacy format (a plain user list, e.g. `guilds: { 123: ["wyf9"] }`) is still supported and is equivalent to configuring only `users`.
 
 See [Permission system](/en/guide/permissions) for details.
 

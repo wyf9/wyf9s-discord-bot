@@ -618,7 +618,7 @@ class AuditLogger:
         trigger_channel_id: int,
         undo_type: str,
         actor: str,
-        source_message: discord.Message,
+        source_message: discord.Message | None,
         category: str,
         rule_unban_link: bool,
     ) -> None:
@@ -663,7 +663,9 @@ class AuditLogger:
         guild_audit_channel_id = self._get_guild_audit_channel_id(self.c, guild.id)
         audit_link: str | None = None
         if rule_unban_link and guild_audit_channel_id is not None:
-            if source_message.channel.id == guild_audit_channel_id:
+            if source_message is not None and (
+                source_message.channel.id == guild_audit_channel_id
+            ):
                 audit_link = source_message.jump_url
             else:
                 channel = self.client.get_channel(guild_audit_channel_id)

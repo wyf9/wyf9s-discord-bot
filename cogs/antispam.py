@@ -143,7 +143,7 @@ class AntiSpamCog(commands.Cog):
             await target.kick(reason=f"antispam/{category}")
             return "kick", should_ping, "kick"
         if action == "ban":
-            await guild.ban(target, reason=f"antispam/{category}")
+            await guild.ban(discord.Object(id=target.id), reason=f"antispam/{category}")
             return "ban", should_ping, "ban"
         mute_minutes = 60
         if isinstance(action, int):
