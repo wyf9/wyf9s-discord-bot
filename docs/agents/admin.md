@@ -19,5 +19,6 @@
 
 ## 注意
 
+- 全局 `slash: false` 时，`main.py` 注册的 `tree.interaction_check` 会直接忽略所有斜杠交互，避免同 token 多实例互相抢答；前缀指令不受影响。
 - 修改后确认 `main.COG_LIST` / `COG_TO_CONFIG` 同步。
 - 重载相关逻辑不要清理 bot 上的共享状态，否则会丢语音连接 / 限速 / 计划数据。

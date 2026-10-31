@@ -332,6 +332,19 @@ def _apply_command_toggles():
 # region error-handling
 
 
+@client.tree.interaction_check  # ty:ignore[invalid-argument-type]  # discord.py generic stub mismatch
+async def ignore_slash_when_disabled(interaction: discord.Interaction, /) -> bool:
+    """全局关闭斜杠指令时忽略交互，避免同 token 多实例抢答"""
+    config = getattr(client, "config", c)
+    if not u.slash_commands_enabled(config):
+        cmd_name = interaction.command.name if interaction.command else "?"
+        l.debug(
+            f"[tree] Ignoring slash interaction {cmd_name!r} (global slash disabled)"
+        )
+        return False
+    return True
+
+
 @client.tree.error
 async def on_tree_error(
     interaction: discord.Interaction, error: discord.app_commands.AppCommandError
