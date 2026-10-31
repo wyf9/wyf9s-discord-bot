@@ -57,6 +57,11 @@ class VoiceCog(commands.Cog):
     def _tr(self, source, key: str, **kwargs) -> str:
         return _t(key, lang_of(source, self.lang_store), **kwargs)
 
+    @staticmethod
+    async def _defer_interaction(source) -> None:
+        if isinstance(source, discord.Interaction) and not source.response.is_done():
+            await source.response.defer(ephemeral=True)
+
     # ========== Slash Group: /vc ==========
 
     vc_group = app_commands.Group(name="vc", description=ls("voice.cmd_group_desc"))
@@ -103,6 +108,7 @@ class VoiceCog(commands.Cog):
     async def _handle_joinvc(
         self, source, channel: discord.VoiceChannel | None = None, persist: bool = False
     ):
+        await self._defer_interaction(source)
         if not await u.check_rate_limit(
             source,
             config=self.c,
@@ -217,6 +223,7 @@ class VoiceCog(commands.Cog):
             l.error(f"Unexpected error in joinvc: {type(e).__name__}: {e}")
 
     async def _handle_leavevc(self, source):
+        await self._defer_interaction(source)
         if not await u.check_rate_limit(
             source,
             config=self.c,

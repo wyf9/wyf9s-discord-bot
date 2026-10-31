@@ -146,13 +146,30 @@ async def send_msg(
     prefix 模式下自动回复原消息, 失败则 fallback 到直接发送
     """
     if isinstance(source, discord.Interaction):
+
+        async def _followup() -> discord.Message | None:
+            try:
+                return await source.followup.send(
+                    content, ephemeral=ephemeral, **kwargs
+                )  # type: ignore
+            except discord.HTTPException as exc:
+                # 交互已被其他并发分支确认: 视为已发送, 不再抛给上层
+                if exc.code == 40060:
+                    return None
+                raise
+
         if source.response.is_done():
-            return await source.followup.send(content, ephemeral=ephemeral, **kwargs)  # type: ignore
-        else:
+            return await _followup()
+        try:
             await source.response.send_message(
                 content, ephemeral=ephemeral, delete_after=delete_after, **kwargs
             )
             return None
+        except discord.HTTPException as exc:
+            # 本地状态与 Discord 不一致时, 回退到 followup
+            if exc.code == 40060:
+                return await _followup()
+            raise
     else:
         try:
             return await source.send(

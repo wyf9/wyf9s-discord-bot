@@ -346,10 +346,10 @@ async def on_tree_error(
 
     lang = lang_of(interaction, getattr(client, "lang_store", None))
     err_msg = _t("common.internal_error", lang, error=error)
-    if not interaction.response.is_done():
-        await interaction.response.send_message(err_msg, ephemeral=True)
-    else:
-        await interaction.followup.send(err_msg, ephemeral=True)
+    try:
+        await u.send_msg(interaction, err_msg, ephemeral=True)
+    except discord.HTTPException as e:
+        l.debug(f"[main] Failed to notify user of slash error: {e}")
 
     # Log to audit (silently ignore if audit fails)
     audit = getattr(client, "audit", None)
