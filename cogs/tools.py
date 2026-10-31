@@ -665,22 +665,13 @@ class ToolsCog(commands.Cog):
             )
 
     async def _check_rate_limit(self, source, command: str) -> bool:
-        user = source.user if isinstance(source, discord.Interaction) else source.author
-        guild = getattr(source, "guild", None)
-        params = u.resolve_rate_limit(self.c, user, guild, "tools", command)
-        if params is None:
-            return True
-        limit, window = params
-        allowed, retry_after = self.rate_limiter.hit((command, user.id), limit, window)
-        if not allowed:
-            await u.send_msg(
-                source,
-                self._tr(source, "common.rate_limited", retry=f"{retry_after:.0f}"),
-                ephemeral=True,
-                delete_after=10,
-            )
-            return False
-        return True
+        return await u.check_rate_limit(
+            source,
+            config=self.c,
+            rate_limiter=self.rate_limiter,
+            module="tools",
+            command=command,
+        )
 
     @staticmethod
     def _mark_clear_message(text: str) -> str:

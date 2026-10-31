@@ -40,8 +40,8 @@ The bot is composed of multiple modules, all **enabled on demand** via the `enab
 | `/lock unlock` | Mod | — | Unlock a channel |
 | `/lock plan` | Mod | — | Schedule lock / unlock |
 | `/lock unplan` | Mod | — | Cancel a schedule |
-| `/vc join` | Allowlist / Mod | — | Bot joins a voice channel |
-| `/vc leave` | Allowlist / Mod | — | Bot leaves a voice channel |
+| `/vc join` | Allowlist / Mod | Per-command quota | Bot joins a voice channel |
+| `/vc leave` | Allowlist / Mod | Per-command quota | Bot leaves a voice channel |
 | `/sync` | Admin | — | Sync the slash command list |
 | `/reload` | Admin | 15s CD | Hot reload modules |
 | `/perm add` | Admin | — | Add a permission rule |

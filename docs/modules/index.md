@@ -40,8 +40,8 @@
 | `/lock unlock` | Mod | — | 解锁频道 |
 | `/lock plan` | Mod | — | 计划锁定 / 解锁 |
 | `/lock unplan` | Mod | — | 取消计划 |
-| `/vc join` | 白名单 / Mod | — | 机器人加入语音频道 |
-| `/vc leave` | 白名单 / Mod | — | 机器人离开语音频道 |
+| `/vc join` | 白名单 / Mod | 按指令额度 | 机器人加入语音频道 |
+| `/vc leave` | 白名单 / Mod | 按指令额度 | 机器人离开语音频道 |
 | `/sync` | Admin | — | 同步斜杠指令列表 |
 | `/reload` | Admin | 15s CD | 热重载模块 |
 | `/perm add` | Admin | — | 添加权限规则 |

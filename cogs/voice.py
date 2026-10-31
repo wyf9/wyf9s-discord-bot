@@ -49,6 +49,7 @@ class VoiceCog(commands.Cog):
         self.c = bot.config  # ty:ignore[unresolved-attribute]
         self.audit: AuditLogger | None = getattr(bot, "audit", None)
         self.lang_store = getattr(bot, "lang_store", None)
+        self.rate_limiter = getattr(bot, "rate_limiter", u.RateLimiter())
         self._reconnecting: set[int] = set()  # guild IDs currently reconnecting
         self._last_vc: dict[int, int] = {}  # guild_id -> channel_id before disconnect
         self._intentional_disconnect: set[int] = set()  # guild IDs from /vc leave
@@ -102,6 +103,14 @@ class VoiceCog(commands.Cog):
     async def _handle_joinvc(
         self, source, channel: discord.VoiceChannel | None = None, persist: bool = False
     ):
+        if not await u.check_rate_limit(
+            source,
+            config=self.c,
+            rate_limiter=self.rate_limiter,
+            module="voicechannel",
+            command="vc join",
+        ):
+            return
         user = source.user if isinstance(source, discord.Interaction) else source.author
 
         if channel is None and isinstance(user, discord.Member):
@@ -208,6 +217,14 @@ class VoiceCog(commands.Cog):
             l.error(f"Unexpected error in joinvc: {type(e).__name__}: {e}")
 
     async def _handle_leavevc(self, source):
+        if not await u.check_rate_limit(
+            source,
+            config=self.c,
+            rate_limiter=self.rate_limiter,
+            module="voicechannel",
+            command="vc leave",
+        ):
+            return
         user = source.user if isinstance(source, discord.Interaction) else source.author
 
         guild = source.guild

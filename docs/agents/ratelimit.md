@@ -3,7 +3,7 @@
 - 模型：`config.py` 的 `_RateLimitConfigModel`
 - 共享计算：`utils.resolve_rate_limit()`
 - 滑动窗口实现：`utils.RateLimiter`
-- 使用方：`cogs/tools.py`、`cogs/emoji.py`
+- 使用方：`cogs/tools.py`、`cogs/emoji.py`、`cogs/voice.py`
 - 测试：`tests/test_ratelimit_config.py`
 
 ## 配置形态
@@ -27,6 +27,8 @@ ratelimit:
 4. 都没有 → 不限速
 
 `resolve_rate_limit()` 还会处理：限速总开关、Admin 豁免、Mod 额度倍数。
+
+Cog 侧统一调用 `utils.check_rate_limit(source, config=..., rate_limiter=..., module=..., command=...)`；它负责命中计数、限速提示与临时消息删除，不要在 Cog 里重复实现。
 
 ## 默认值与旧配置兼容
 

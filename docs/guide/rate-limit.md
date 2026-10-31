@@ -4,19 +4,21 @@
 
 ## 自定义指令限速
 
-[工具模块](/modules/tools)和[表情模块](/modules/emoji)对以下指令实现了**滑动窗口限速**，防止滥用：
+[工具模块](/modules/tools)、[表情模块](/modules/emoji)和[语音模块](/modules/voice)对以下指令实现了**滑动窗口限速**：
 
 - `random`
 - `uuid`
 - `to-file`
 - `e`
 - `emoji-info`
+- `vc join`
+- `vc leave`
 
 此外，**所有指令**均有 10reqs / 10s 全局限速 fallback（由 `@u.requires()` 装饰器统一处理）。
 
 ### 工作原理
 
-限速器 `RateLimiter`（`utils.py`）以 `(指令, 用户 ID)` 为 key，记录窗口内的调用时间戳：
+限速器 `RateLimiter`（`utils.py`）以 `(模块:指令, 用户 ID)` 为 key，记录窗口内的调用时间戳：
 
 ```python
 def hit(self, key, limit, window) -> tuple[bool, float]:

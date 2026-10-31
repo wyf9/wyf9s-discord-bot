@@ -215,25 +215,16 @@ class EmojiCog(commands.Cog):
     # ========== Shared Logic ==========
 
     async def _check_rate_limit(self, source, command: str) -> bool:
-        user = source.user if isinstance(source, discord.Interaction) else source.author
         rate_limiter = getattr(self.bot, "rate_limiter", None)
         if not rate_limiter:
             return True
-        guild = getattr(source, "guild", None)
-        params = u.resolve_rate_limit(self.c, user, guild, "emoji", command)
-        if params is None:
-            return True
-        limit, window = params
-        allowed, retry_after = rate_limiter.hit((command, user.id), limit, window)
-        if not allowed:
-            await u.send_msg(
-                source,
-                self._tr(source, "common.rate_limited", retry=f"{retry_after:.0f}"),
-                ephemeral=True,
-                delete_after=10,
-            )
-            return False
-        return True
+        return await u.check_rate_limit(
+            source,
+            config=self.c,
+            rate_limiter=rate_limiter,
+            module="emoji",
+            command=command,
+        )
 
     async def update_emoji_list(self) -> tuple[bool, str]:
         l.info("[emoji] Updating emoji list...")

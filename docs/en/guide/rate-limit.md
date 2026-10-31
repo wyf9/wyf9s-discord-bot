@@ -4,19 +4,21 @@
 
 ## Custom command rate limiting
 
-The [Tools module](/en/modules/tools) and the [Emoji module](/en/modules/emoji) implement **sliding-window rate limiting** for the following commands to prevent abuse:
+The [Tools module](/en/modules/tools), [Emoji module](/en/modules/emoji), and [Voice module](/en/modules/voice) implement **sliding-window rate limiting** for the following commands:
 
 - `random`
 - `uuid`
 - `to-file`
 - `e`
 - `emoji-info`
+- `vc join`
+- `vc leave`
 
 In addition, **all commands** have a global rate-limit fallback of 10 reqs / 10s (handled uniformly by the `@u.requires()` decorator).
 
 ### How it works
 
-The `RateLimiter` (`utils.py`) keys on `(command, user ID)` and records the call timestamps within the window:
+The `RateLimiter` (`utils.py`) keys on `(module:command, user ID)` and records the call timestamps within the window:
 
 ```python
 def hit(self, key, limit, window) -> tuple[bool, float]:

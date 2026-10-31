@@ -4,6 +4,7 @@
 - 配置：`voicechannel.*`
 - 指令：`/vc join`、`/vc leave`
 - 权限：`_voice_permission`（白名单用户 → 服务器白名单 → Mod）
+- 限速：`_handle_joinvc` / `_handle_leavevc` 入口调用 `u.check_rate_limit()`，模块名 `voicechannel`，指令 `vc join` / `vc leave`
 
 ## 行为
 

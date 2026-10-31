@@ -287,6 +287,45 @@ def resolve_rate_limit(
     return limit, rl.window
 
 
+async def check_rate_limit(
+    source,
+    *,
+    config: "ConfigModel",
+    rate_limiter: "RateLimiter",
+    module: str,
+    command: str,
+) -> bool:
+    """
+    按全局限速配置检查并记录一次调用
+
+    :return: True 表示允许执行, False 表示已回复限速提示
+    """
+    user = source.user if isinstance(source, discord.Interaction) else source.author
+    guild = getattr(source, "guild", None)
+    params = resolve_rate_limit(config, user, guild, module, command)
+    if params is None:
+        return True
+    limit, window = params
+    allowed, retry_after = rate_limiter.hit(
+        (f"{module}:{command}", user.id), limit, window
+    )
+    if not allowed:
+        import i18n
+
+        await send_msg(
+            source,
+            i18n.t(
+                "common.rate_limited",
+                _resolve_lang(source),
+                retry=f"{retry_after:.0f}",
+            ),
+            ephemeral=True,
+            delete_after=10,
+        )
+        return False
+    return True
+
+
 # ========== Declarative Permission Control ==========
 
 

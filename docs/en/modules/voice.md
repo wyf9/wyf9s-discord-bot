@@ -25,6 +25,7 @@ Have the bot join the voice channel you are currently in, or a specified channel
 | Permission | Whitelisted user / Mod |
 | Parameters | `channel` (optional, leave empty to use the voice channel you are currently in), `persist` (optional, persist session) |
 | Bot permissions | Connect |
+| Rate Limit | ✅ Limited |
 | Audit | ✅ Recorded (`joinvc`) |
 
 Behavior details:
@@ -42,6 +43,7 @@ Have the bot leave the voice channel it is currently in.
 | Item | Description |
 | --- | --- |
 | Permission | Whitelisted user / Mod |
+| Rate Limit | ✅ Limited |
 | Audit | ✅ Recorded (`leavevc`) |
 
 - If the bot is not in any voice channel, a message is shown.
